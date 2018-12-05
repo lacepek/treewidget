@@ -121,24 +121,24 @@
                 'name': 'otazka',
                 'parent': 'kategorie',
                 'isSortable': true,
-                'useFormEdit': true, 
+                'useFormEdit': true,
                 'items': {
                     'pk': { type: 'text', hidden: true },
                     'nazev': { type: 'text', label: 'Otázka' },
                     'druh': {
-                        type: 'select',
-                        label: 'Druh otázky',
-                        options: {
-                            'skala': { 'value': 'skala', 'label': 'Otazka na skale' },
-                            'text': { value: 'text', label: 'Volny text' }
+                        'type': 'select',
+                        'label': 'Druh otázky',
+                        'options': {
+                            'skala': { 'key': 'skala', 'value': 'Otazka na skale' },
+                            'text': { 'key': 'text', 'value': 'Volny text' }
                         }
                     },
                     'dulezitost': {
-                        'type': 'select',
+                        'type': 'checkbox',
                         'label': 'Dulezitost',
                         'options': {
-                            'ano': { 'value': 'ano', 'label': 'Ano' },
-                            'ne': { 'value': 'ne', 'label': 'Ne' }
+                            'ano': { 'key': 'ano', 'value': 'Ano' },
+                            'ne': { 'key': 'ne', 'value': 'Ne' }
                         }
                     }
                 }

@@ -19,7 +19,9 @@ export class ElementUtility
             }
         }
 
-        this.addContent(element, content);
+        if (content) {
+            this.addContent(element, content);
+        }
 
         return element;
     }

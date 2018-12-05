@@ -4,7 +4,7 @@ export declare class Modal extends Component {
         size: number;
         text: string;
     };
-    content: HTMLElement | Component | string | Array<HTMLElement | Component | string>;
+    content: HTMLElement | Component | string | HTMLElement[] | Component[] | string[];
     hasCloseButton: boolean;
     dismissButton: HTMLElement;
     confirmButton: HTMLElement;
@@ -12,8 +12,8 @@ export declare class Modal extends Component {
     onDismiss: () => void;
     onClose: () => void;
     private contentElement;
-    setContent(value: HTMLElement | Component | string | Array<HTMLElement | Component | string>): void;
-    addContent(value: HTMLElement | Component | string | Array<HTMLElement | Component | string>): void;
+    setContent(value: HTMLElement | Component | string | HTMLElement[] | Component[] | string[]): void;
+    addContent(value: HTMLElement | Component | string | HTMLElement[] | Component[] | string[]): void;
     clearContent(): void;
     protected render(): void;
     protected close(): void;

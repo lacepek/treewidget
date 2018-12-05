@@ -4,25 +4,25 @@ import { ElementUtility } from "./utility/elementUtility";
 export class Modal extends Component
 {
     public title: { size: number, text: string };
-    public content: HTMLElement | Component | string | Array<HTMLElement | Component | string>;
+    public content: HTMLElement | Component | string | HTMLElement[] | Component[] | string[];
     public hasCloseButton: boolean;
     public dismissButton: HTMLElement;
     public confirmButton: HTMLElement;
-    
+
     public onConfirm: () => void;
     public onDismiss: () => void;
     public onClose: () => void;
-    
+
     private contentElement: HTMLElement;
 
-    public setContent(value: HTMLElement | Component | string | Array<HTMLElement | Component | string>): void
+    public setContent(value: HTMLElement | Component | string | HTMLElement[] | Component[] | string[]): void
     {
         if (this.contentElement) {
             ElementUtility.setContent(this.contentElement, value);
         }
     }
 
-    public addContent(value: HTMLElement | Component | string | Array<HTMLElement | Component | string>): void
+    public addContent(value: HTMLElement | Component | string | HTMLElement[] | Component[] | string[]): void
     {
         if (this.contentElement) {
             ElementUtility.addContent(this.contentElement, value);
@@ -47,7 +47,7 @@ export class Modal extends Component
         const windowFooter = ElementUtility.createElement("div", null, { className: "modal-window-footer" });
         const window = ElementUtility.createElement(
             "div",
-            new Array(windowHeader, this.contentElement, windowFooter),
+            [windowHeader, this.contentElement, windowFooter],
             { className: "modal-window" }
         );
 
@@ -73,7 +73,8 @@ export class Modal extends Component
         let buttonGroup = null;
 
         if (this.dismissButton) {
-            this.dismissButton.addEventListener("click", () => {
+            this.dismissButton.addEventListener("click", () =>
+            {
                 if (this.onDismiss) {
                     this.onDismiss();
                 }
@@ -83,7 +84,8 @@ export class Modal extends Component
         }
 
         if (this.confirmButton) {
-            this.confirmButton.addEventListener("click", () => {
+            this.confirmButton.addEventListener("click", () =>
+            {
                 if (this.onConfirm) {
                     this.onConfirm();
                 }
@@ -93,14 +95,15 @@ export class Modal extends Component
         if (this.dismissButton || this.confirmButton) {
             buttonGroup = ElementUtility.createElement(
                 "div",
-                new Array(this.dismissButton, this.confirmButton),
+                [this.dismissButton, this.confirmButton],
                 { className: "btn-group", role: "group" }
             );
         }
 
         ElementUtility.addContent(windowFooter, buttonGroup);
 
-        this.element.addEventListener("click", (event: Event) => {
+        this.element.addEventListener("click", (event: Event) =>
+        {
             if (event.target === this.element) {
                 this.close()
             }

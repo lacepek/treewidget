@@ -4,6 +4,9 @@ import SortZone from "./base/containers/sortzone";
 import { Container } from "./base/containers/container";
 import { ElementUtility } from "./base/utility/elementUtility";
 import { Modal } from "./base/modal";
+import { DynamicForm } from "./base/forms/dynamicForm";
+import { IFormAttribute, IFormAttributeOption } from "./base/forms/IformAttribute";
+import objectFilter from "./base/utility/objectFilter";
 
 export class Tree extends Component
 {
@@ -145,10 +148,6 @@ export class Tree extends Component
         const newElement = newLine.element;
         newElement.focus();
 
-        newElement.addEventListener("focusout", () =>
-        {
-            console.log("focusout");
-        });
 
         parent.insertBefore(newElement, element);
     }
@@ -179,8 +178,7 @@ export class Tree extends Component
 
         line.element.addEventListener("click", () =>
         {
-            let previousElement = line.element.previousElementSibling as HTMLElement;
-            this.addEditLine(line);
+            this.addLine(data, structure);
         });
 
         return line;
@@ -189,41 +187,54 @@ export class Tree extends Component
     protected addLine(data: IDataNode, structure: IStructure): void
     {
         if (structure.useFormEdit) {
+            let modelItems = objectFilter(structure.items, (item: IStructureItem) => {
+                if (!item.hidden) {
+                    return true;
+                }
 
-        }
+                return false;
+            });
+            const form = new DynamicForm({
+                model: modelItems
+            });
+        
+        this.modal.setContent(form);
+
+        this.modal.show();
     }
+}
 
     protected createLine(
-        level: number,
-        count: number,
-        isSortable: boolean,
-        parentElement: HTMLElement,
-        data: IDataNode,
-        structure: IStructure,
-        options?: object,
-        sortZone?: SortZone
-    ): TreeLine
-    {
-        let lineOptions = {
-            parentElement,
-            data,
-            structure,
-            level,
-            canDrag: isSortable,
-            events: this.events,
-            container: sortZone,
-            count
-        }
-
-        return new TreeLine(lineOptions);
+    level: number,
+    count: number,
+    isSortable: boolean,
+    parentElement: HTMLElement,
+    data: IDataNode,
+    structure: IStructure,
+    options ?: object,
+    sortZone ?: SortZone
+): TreeLine
+{
+    let lineOptions = {
+        parentElement,
+        data,
+        structure,
+        level,
+        canDrag: isSortable,
+        events: this.events,
+        container: sortZone,
+        count
     }
+
+    return new TreeLine(lineOptions);
+}
 
     protected createEditLine(level: number, name: string, parent: HTMLElement): TreeLine
-    {
-        let line = this.createLine(level, 0, false, parent, { item: null }, { name: null, parent: null });
+{
+    let line = this.createLine(level, 0, false, parent, { item: null }, { name: null, parent: null });
 
-        return line;
-    }
+    return line;
+}
 }
 
 export interface ITreeNode
@@ -260,16 +271,7 @@ export interface IStructure
     items?: { [name: string]: IStructureItem };
 }
 
-export interface IStructureItem
+export interface IStructureItem extends IFormAttribute
 {
-    type: string;
-    label?: string;
     hidden?: string;
-    options?: { [name: string]: IStructureItemOption };
-}
-
-export interface IStructureItemOption
-{
-    value: string;
-    label: string;
 }

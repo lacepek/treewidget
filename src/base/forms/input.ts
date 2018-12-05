@@ -4,10 +4,6 @@ import { ElementUtility } from "../utility/elementUtility";
 export default class Input extends Component
 {
     public label: string;
-    public name: string;
-    public type: string;
-    public value: string;
-    public disabled: boolean;
 
     public onChange: (event: Event, input: Input) => void;
 
@@ -15,28 +11,28 @@ export default class Input extends Component
 
     public render(): void
     {
-        super.render();
-
-        this.setAttribute('class', 'form-group');
+        this.element = ElementUtility.createElement("div", null, { className: "form-group" });
 
         const id = `input-${this.name}`;
         if (this.label) {
-            const labelElement = ElementUtility.createElement('label', null, { forId: id });
-            this.parentElement.appendChild(labelElement);
+            const labelElement = ElementUtility.createElement("label", this.label, { forId: id });
+            this.addContent(labelElement);
         }
 
-        this.input = ElementUtility.createElement('input', null, {
-            className: 'form-control',
-            type: this.type,
-            name: this.name,
-            id: id,
-            value: this.value,
-            disabled: this.disabled
+        this.input = ElementUtility.createElement("input", null, {
+            ...{ className: "form-control", id }, ...this.attributes
         }) as HTMLInputElement;
 
-        this.input.addEventListener('change', (event: Event) => { this.onChange(event, this) })
+        if (this.onChange) {
+            this.input.addEventListener("change", (event: Event) => { this.onChange(event, this) });
+        }
 
-        this.parentElement.appendChild(this.input);
+        this.element.appendChild(this.input);
+
+        this.parentElement = this.getParentElement();
+        if (this.parentElement) {
+            this.parentElement.appendChild(this.element);
+        }
     }
 
     public getValue(): string
@@ -55,7 +51,6 @@ export default class Input extends Component
 
         this.label = null;
         this.input = null;
-        this.tag = 'div';
-        this.type = 'text';
+        this.attributes = { type: "text" };
     }
 }

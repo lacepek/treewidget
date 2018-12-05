@@ -42,6 +42,6 @@ export interface IDraggable
     container: DropZone;
     canDrag: boolean;
 
-    onDragEnd(event): void;
-    onDragStart(event): void;
+    onDragEnd(event: any): void;
+    onDragStart(event: any): void;
 }

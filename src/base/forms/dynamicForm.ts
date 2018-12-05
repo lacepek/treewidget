@@ -1,8 +1,10 @@
-import { IFormAttribute, IFormAttributeOption } from './IformAttribute';
-import { Component } from '../component';
-import objectMap from '../utility/objectMap';
-import Input from './input';
-import { ElementUtility } from '../utility/elementUtility';
+import { IFormAttribute, IFormAttributeOption } from "./IformAttribute";
+import { Component } from "../component";
+import objectMap from "../utility/objectMap";
+import Input from "./input";
+import { ElementUtility } from "../utility/elementUtility";
+import Select from "./select";
+import Checkbox from "./checkbox";
 
 export class DynamicForm extends Component
 {
@@ -12,10 +14,12 @@ export class DynamicForm extends Component
     {
         super.render();
 
-        this.element.addEventListener('submit', (event: Event) => this.onSubmit(event))
+        this.element.addEventListener("submit", (event: Event) => this.onSubmit(event))
 
         if (this.model) {
-            this.renderForm();
+            const form = this.renderForm();
+
+            this.setContent(form);
         }
     }
 
@@ -23,12 +27,12 @@ export class DynamicForm extends Component
     {
         super.setDefaultProps();
 
-        this.tag = 'form';
+        this.tag = "form";
     }
 
     protected onSubmit(event: any)
     {
-        console.log('submit');
+        console.log("submit");
         /*event.preventDefault();
 
         if (this.onSubmit) {
@@ -39,7 +43,7 @@ export class DynamicForm extends Component
         }*/
     }
 
-    protected renderForm(): void
+    protected renderForm(): Array<Component>
     {
         const attributes = this.model;
 
@@ -49,13 +53,13 @@ export class DynamicForm extends Component
 
             let input = null;
             switch (type) {
-                case 'radio':
+                case "radio":
                     input = this.renderRadioList(attribute);
                     break;
-                case 'select':
+                case "select":
                     input = this.renderSelect(attribute);
                     break;
-                case 'checkbox':
+                case "checkbox":
                     input = this.renderCheckbox(attribute);
                     break;
                 default:
@@ -92,7 +96,7 @@ export class DynamicForm extends Component
                 {radioWrapper}
             </div>
         );*/
-        return ElementUtility.createElement('div');
+        return ElementUtility.createElement("div");
     }
 
     protected renderRadio(key: string, type: string, option: IFormAttributeOption): HTMLElement
@@ -124,78 +128,41 @@ export class DynamicForm extends Component
             </div>
         );*/
 
-        return ElementUtility.createElement('div');
+        return ElementUtility.createElement("div");
     }
 
-    protected renderSelect(attribute: IFormAttribute): HTMLElement
+    protected renderSelect(attribute: IFormAttribute): Select
     {
-        /*const { key, value, options, label, disabled } = attribute;
+        const { name, value, options, label, disabled } = attribute;
 
         const optionElements = objectMap(options, (option: IFormAttributeOption) => 
         {
-            const optionKey = `${key}-${option.key}`, id = `option-${optionKey}`;
-            return <option key={optionKey} id={id}  >
-                {option.value}
-            </option>
+            const id = `option-${name}-${option.key}`;
+            return ElementUtility.createElement("option", option.value, { id });
         });
 
-        const selectId = `select-${key}`
-        const selectElement = <select
-            ref={this.references[key]}
-            id={selectId}
-            name={key}
-            disabled={disabled}
-            className="form-control"
-            defaultValue={value}
-            onChange={(event: React.ChangeEvent<HTMLSelectElement>) => { this.onSelectChange(event, key) }}
-        >
-            {optionElements}
-        </select>
+        const selectId = `select-${name}`;
+        const selectElement = new Select({ label, attributes: { name, disabled, value, id: selectId } });
 
-        let labelElement = null;
-        if (label) {
-            labelElement = <label htmlFor={selectId} id={`label-${key}`}>{label}</label>
-        }
+        selectElement.addContent(optionElements);
 
-        return (
-            <div key={key} className="form-group">
-                {labelElement}
-                {selectElement}
-            </div>
-        );*/
-
-        return ElementUtility.createElement('div');
+        return selectElement;
     }
 
-    protected renderCheckbox(attribute: IFormAttribute): HTMLElement
+    protected renderCheckbox(attribute: IFormAttribute): Checkbox
     {
-        /*const { key, type, label, value, disabled } = attribute;
+        const { name, type, label, value, disabled } = attribute;
+        const checked = value;
+        
+        const checkbox = new Checkbox({
+            label,
+            onChange: this.onTextChange,
+            attributes: { name, disabled, value, type }
+        });
 
-        const id = `checkbox-${key}`;
-        let labelElement = null;
-        if (label) {
-            labelElement = <label htmlFor={id} id={`label-${key}`}>{label}</label>
-        }
+        checkbox.setAttribute("checked", checked);
 
-        const checked = this.state.model.getAttribute(key).value;
-
-        return (
-            <div key={key} className="form-group">
-                {labelElement}
-                <input
-                    className="form-input"
-                    type={type}
-                    ref={this.references[key]}
-                    name={key}
-                    id={id}
-                    checked={checked}
-                    disabled={disabled}
-                    onChange={(event: React.ChangeEvent<HTMLInputElement>) => { this.onCheckboxChange(event, key) }}
-                />
-            </div>
-        );*/
-
-        return ElementUtility.createElement('div');
+        return checkbox;
     }
 
     private renderText(attribute: IFormAttribute): Input
@@ -203,7 +170,9 @@ export class DynamicForm extends Component
         const { name, type, label, value, disabled } = attribute;
 
         const input = new Input({
-            parentElement: this.element, name, label, disabled, value, type: "text", onChange: this.onTextChange
+            label,
+            onChange: this.onTextChange,
+            attributes: { name, disabled, value, type }
         });
 
         return input;

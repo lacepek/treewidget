@@ -25,7 +25,7 @@ export class DropZone extends Container
             this.element.addEventListener('dragover', this.onDragOver);
             this.element.addEventListener('dragenter', this.onDragEnter);
             this.element.addEventListener('dragleave', this.onDragLeave);
-            this.element.addEventListener('drop', (event: Event) => { console.log(event); return this.onDrop(event) });
+            this.element.addEventListener('drop', (event: Event) => { return this.onDrop(event) });
         }
     }
 

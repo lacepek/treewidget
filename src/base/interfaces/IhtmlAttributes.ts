@@ -1,5 +1,6 @@
 export default interface IHtmlAttributes
 {
+    [key: string]: any;
     id?: string;
     className?: string;
     style?: string;

@@ -4,7 +4,7 @@ import IHtmlAttributes from "./interfaces/IhtmlAttributes";
 
 export class Component extends Configurable
 {
-    public attributes: IHtmlAttributes;
+    public attributes: IHtmlAttributes = null;
 
     public parentElement: HTMLElement;
     public element: HTMLElement;
@@ -97,7 +97,7 @@ export class Component extends Configurable
     protected setDefaultProps(): void
     {
         this.attributes = { id: null, className: null, style: null };
-        this.parentElement = document.body;
+        this.parentElement = null;
         this.element = null;
         this.parentSelector = null;
         this.tag = 'div';

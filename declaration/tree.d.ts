@@ -1,6 +1,7 @@
 import { Component } from "./base/component";
 import { TreeLine, IOnClickData, IOnLineMoveData } from "./tree-line";
 import SortZone from "./base/containers/sortzone";
+import { IFormAttribute } from "./base/forms/IformAttribute";
 export declare class Tree extends Component {
     data: Array<IDataNode>;
     structure: {
@@ -52,16 +53,7 @@ export interface IStructure {
         [name: string]: IStructureItem;
     };
 }
-export interface IStructureItem {
-    type: string;
-    label?: string;
+export interface IStructureItem extends IFormAttribute {
     hidden?: string;
-    options?: {
-        [name: string]: IStructureItemOption;
-    };
-}
-export interface IStructureItemOption {
-    value: string;
-    label: string;
 }
 //# sourceMappingURL=tree.d.ts.map

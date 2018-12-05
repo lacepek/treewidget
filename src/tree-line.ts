@@ -101,7 +101,7 @@ export class TreeLine extends Sortable
         const dataValue = this.data.item[key];
         if (item.options && dataValue) {
             if (item.options[dataValue]) {
-                const value = item.options[dataValue].label;
+                const value = item.options[dataValue].value;
 
                 return value ? value : null;
             }
