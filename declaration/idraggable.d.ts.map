@@ -1,0 +1,1 @@
+{"version":3,"file":"idraggable.d.ts","sourceRoot":"","sources":["../treewidget/src/idraggable.ts"],"names":[],"mappings":"AAAA,OAAO,QAAQ,MAAM,YAAY,CAAC;AAElC,MAAM,CAAC,OAAO,WAAW,UAAU;IAE/B,SAAS,EAAE,QAAQ,CAAC;IACpB,OAAO,EAAE,OAAO,CAAC;IAEjB,SAAS,CAAC,KAAK,KAAA,GAAG,IAAI,CAAC;IACvB,WAAW,CAAC,KAAK,KAAA,GAAG,IAAI,CAAC;CAC5B"}

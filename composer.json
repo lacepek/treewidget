@@ -1,0 +1,22 @@
+{
+    "name": "rating-plugin",
+    "description": "Typescript rating plugin",
+    "type": "typescript-plugin",
+    "license": "MIT",
+    "version": "1.0.3",
+    "authors": [
+        {
+            "name": "Ladislav Cepek",
+            "email": "la.cepek@gmail.com"
+        }
+    ],
+    "support": {
+        "issues": "https://github.com/lacepek/rating-plugin/issues",
+        "source": "https://github.com/lacepek/rating-plugin"
+    },
+    "extra": {
+        "branch-alias": {
+            "dev-master": "1.0.x-dev"
+        }
+    }
+}

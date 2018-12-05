@@ -1,0 +1,1 @@
+{"version":3,"file":"sortable.d.ts","sourceRoot":"","sources":["../../treewidget/src/base/sortable.ts"],"names":[],"mappings":"AAAA,OAAO,EAAE,SAAS,EAAE,MAAM,aAAa,CAAC;AAExC,qBAAa,QAAS,SAAQ,SAAS;IAE5B,aAAa,CAAC,IAAI,EAAE,kBAAkB,GAAG,IAAI;CAIvD;AAED,MAAM,WAAW,kBAAkB;IAE/B,SAAS,EAAE,MAAM,CAAC;IAClB,KAAK,EAAE,MAAM,CAAC;IACd,cAAc,EAAE,MAAM,CAAC;CAC1B"}
