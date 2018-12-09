@@ -124,8 +124,9 @@
                 'useFormEdit': true,
                 'items': {
                     'pk': { type: 'text', hidden: true },
-                    'nazev': { type: 'text', label: 'Otázka' },
+                    'nazev': { name:"skala", type: 'text', label: 'Otázka' },
                     'druh': {
+                        "name": "druh",
                         'type': 'select',
                         'label': 'Druh otázky',
                         'options': {
@@ -134,6 +135,7 @@
                         }
                     },
                     'dulezitost': {
+                        "name": "dulezitost",
                         'type': 'checkbox',
                         'label': 'Dulezitost',
                         'options': {

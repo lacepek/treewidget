@@ -3,7 +3,7 @@ const path = require('path');
 module.exports = {
     mode: 'development',
     entry: './src/index.ts',
-    devtool: 'inline-source-map',
+    devtool: 'eval-source-map',
     module: {
         rules: [
             {
@@ -20,6 +20,10 @@ module.exports = {
         path: path.resolve(__dirname, 'dist'),
         filename: 'treewidget.js',
         libraryTarget: 'var',
-        library: 'TreeWidget'
+        library: 'TreeWidget',
     },
+    devServer: {
+        contentBase: path.resolve(__dirname),
+        port: 8080
+    }
 };

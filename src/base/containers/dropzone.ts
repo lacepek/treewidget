@@ -1,9 +1,9 @@
 import { Draggable } from "../draggable";
 import { Container, IContainerChild } from "./container";
 
-export class DropZone extends Container
+export class DropZone extends Container<{}>
 {
-    public current: IContainerChild;
+    public current: IContainerChild<{}>;
 
     public setCurrent(draggable: Draggable): void
     {

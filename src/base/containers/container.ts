@@ -1,17 +1,22 @@
 import { Component } from "../component";
 
-export class Container extends Component
+export class Container<T> extends Component<T>
 {
-    protected children: Array<IContainerChild>;
+    protected children: Array<IContainerChild<T>>;
 
-    public addChild(child: Component): void
+    public render()
+    {
+        this.element = this.createElement();
+    }
+
+    public addChild(child: Component<T>): void
     {
         let size = this.children.length;
         this.children.push({index: size, component: child});
         child.parent = this;
     }
 
-    public findChildByElement(element: HTMLElement): IContainerChild
+    public findChildByElement(element: HTMLElement): IContainerChild<T>
     {
         for (let child of this.children) {
             if (child.component.element === element) {
@@ -22,7 +27,7 @@ export class Container extends Component
         return null;
     }
 
-    public findChild(component: Component)
+    public findChild(component: Component<T>)
     {
         for (let child of this.children) {
             if (child.component === component) {
@@ -58,8 +63,8 @@ export class Container extends Component
     }
 }
 
-export interface IContainerChild
+export interface IContainerChild<T>
 {
     index: number,
-    component: Component;
+    component: Component<T>;
 }

@@ -1,7 +1,7 @@
 import { Component } from "../component";
 import { ElementUtility } from "../utility/elementUtility";
 
-export default class Checkbox extends Component
+export default class Checkbox extends Component<{}>
 {
     public label: string;
 
@@ -13,7 +13,7 @@ export default class Checkbox extends Component
     {
         this.element = ElementUtility.createElement("div", null, { className: "form-check" });
 
-        const id = `checkbox-${this.name}`;
+        const id = `checkbox-${this.attributes.name}`;
 
         this.checkbox = ElementUtility.createElement("input", null, {
             ...{ className: "form-check-input", id }, ...this.attributes
@@ -27,7 +27,7 @@ export default class Checkbox extends Component
 
         const label = this.label;
         if (label) {
-            const labelClass = "form-check-input";
+            const labelClass = "form-check-label";
             const labelElement = ElementUtility.createElement("label", label, { className: labelClass, forId: id });
             this.addContent(labelElement);
         }

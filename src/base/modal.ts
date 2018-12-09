@@ -1,10 +1,10 @@
 import { Component } from "./component";
 import { ElementUtility } from "./utility/elementUtility";
 
-export class Modal extends Component
+export class Modal extends Component<{content: any}>
 {
     public title: { size: number, text: string };
-    public content: HTMLElement | Component | string | HTMLElement[] | Component[] | string[];
+    public content: any;
     public hasCloseButton: boolean;
     public dismissButton: HTMLElement;
     public confirmButton: HTMLElement;
@@ -15,36 +15,23 @@ export class Modal extends Component
 
     private contentElement: HTMLElement;
 
-    public setContent(value: HTMLElement | Component | string | HTMLElement[] | Component[] | string[]): void
+    public init()
     {
-        if (this.contentElement) {
-            ElementUtility.setContent(this.contentElement, value);
-        }
-    }
+        super.init();
 
-    public addContent(value: HTMLElement | Component | string | HTMLElement[] | Component[] | string[]): void
-    {
-        if (this.contentElement) {
-            ElementUtility.addContent(this.contentElement, value);
-        }
-    }
-
-    public clearContent(): void
-    {
-        if (this.contentElement) {
-            ElementUtility.clearContent(this.contentElement);
-        }
+        this.state.content = this.content;
     }
 
     protected render(): void
     {
-        super.render();
+        this.element = this.createElement("div");
 
         this.element.className = "modal-overlay";
+        this.contentElement = ElementUtility.createElement("div", null, { className: "modal-window-body" });
 
         const windowHeader = ElementUtility.createElement("div", null, { className: "modal-window-header" });
-        this.contentElement = ElementUtility.createElement("div", null, { className: "modal-window-body" });
         const windowFooter = ElementUtility.createElement("div", null, { className: "modal-window-footer" });
+
         const window = ElementUtility.createElement(
             "div",
             [windowHeader, this.contentElement, windowFooter],
@@ -66,11 +53,9 @@ export class Modal extends Component
             windowHeader.appendChild(closeButton);
         }
 
-        if (this.content) {
-            this.addContent(this.content);
+        if (this.state.content) {
+            this.addContent(this.state.content);
         }
-
-        let buttonGroup = null;
 
         if (this.dismissButton) {
             this.dismissButton.addEventListener("click", () =>
@@ -78,11 +63,11 @@ export class Modal extends Component
                 if (this.onDismiss) {
                     this.onDismiss();
                 }
-
+                
                 this.close();
             });
         }
-
+        
         if (this.confirmButton) {
             this.confirmButton.addEventListener("click", () =>
             {
@@ -91,7 +76,8 @@ export class Modal extends Component
                 }
             });
         }
-
+        
+        let buttonGroup = null;
         if (this.dismissButton || this.confirmButton) {
             buttonGroup = ElementUtility.createElement(
                 "div",
@@ -110,6 +96,7 @@ export class Modal extends Component
         });
 
         ElementUtility.addContent(this.element, window);
+        console.log('foo');
     }
 
     protected close()

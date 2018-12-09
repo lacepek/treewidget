@@ -6,13 +6,13 @@ import { ElementUtility } from "../utility/elementUtility";
 import Select from "./select";
 import Checkbox from "./checkbox";
 
-export class DynamicForm extends Component
+export class DynamicForm extends Component<{}>
 {
     public model: { [name: string]: IFormAttribute };
 
     protected render(): void
     {
-        super.render();
+        this.element = this.createElement();
 
         this.element.addEventListener("submit", (event: Event) => this.onSubmit(event))
 
@@ -43,7 +43,7 @@ export class DynamicForm extends Component
         }*/
     }
 
-    protected renderForm(): Array<Component>
+    protected renderForm(): Array<Component<{}>>
     {
         const attributes = this.model;
 

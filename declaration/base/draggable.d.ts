@@ -1,6 +1,6 @@
 import { Component } from './component';
 import { DropZone } from './containers/dropzone';
-export declare class Draggable extends Component implements IDraggable {
+export declare class Draggable extends Component<{}> implements IDraggable {
     container: DropZone;
     canDrag: boolean;
     initDragEvents(): void;

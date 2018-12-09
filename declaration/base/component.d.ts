@@ -1,26 +1,32 @@
 import Configurable from "./configurable";
 import IHtmlAttributes from "./interfaces/IhtmlAttributes";
-export declare class Component extends Configurable {
+/**
+ * Base configurable component
+ * @template T type of state
+ */
+export declare class Component<T> extends Configurable {
     attributes: IHtmlAttributes;
     parentElement: HTMLElement;
     element: HTMLElement;
     parentSelector: string;
     tag: string;
-    parent: Component;
+    parent: Component<T>;
     events: any;
+    protected state: any;
     private _config;
     constructor(config?: any);
     setAttribute(name: string, value: any): void;
-    setContent(value: HTMLElement | Component | string | Array<HTMLElement | Component | string>): void;
-    addContent(value: HTMLElement | Component | string | Array<HTMLElement | Component | string>): void;
+    setContent(value: any): void;
+    addContent(value: any): void;
     clearContent(): void;
     show(): void;
     hide(): void;
+    setState(state: T): void;
     protected init(): void;
     protected render(): void;
     protected postRender(): void;
     protected getParentElement(): HTMLElement;
     protected setDefaultProps(): void;
-    private innerRender;
+    protected createElement(tag?: string, content?: any, attributes?: IHtmlAttributes): HTMLElement;
 }
 //# sourceMappingURL=component.d.ts.map

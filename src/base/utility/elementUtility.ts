@@ -1,13 +1,12 @@
 import IHtmlAttributes from "../interfaces/IhtmlAttributes";
 import { Component } from "../component";
 
+/**
+ * Utility for working with elements 
+ */
 export class ElementUtility
 {
-    public static createElement(
-        tag: string,
-        content?: HTMLElement | Component | string | Array<HTMLElement | Component | string>,
-        attributes?: IHtmlAttributes
-    ): HTMLElement
+    public static createElement(tag: string, content?: any, attributes?: IHtmlAttributes): HTMLElement
     {
         let element = document.createElement(tag);
 
@@ -26,7 +25,7 @@ export class ElementUtility
         return element;
     }
 
-    public static setAttribute(target: HTMLElement | Component, name: string, value: any): void
+    public static setAttribute(target: any, name: string, value: any): void
     {
         if (target && value != null && value != undefined) {
             name = this.sanitizeAttributeName(name);
@@ -45,8 +44,8 @@ export class ElementUtility
     }
 
     public static addContent(
-        target: HTMLElement | Component,
-        content: HTMLElement | Component | string | Array<HTMLElement | Component | string>
+        target: any,
+        content: any
     ): void
     {
         if (!content || !target) {
@@ -63,8 +62,8 @@ export class ElementUtility
     }
 
     public static setContent(
-        target: HTMLElement | Component,
-        content: HTMLElement | Component | string | Array<HTMLElement | Component | string>
+        target: any,
+        content: any
     ): void
     {
         if (!content || !target) {
@@ -76,7 +75,7 @@ export class ElementUtility
         this.addContent(target, content);
     }
 
-    public static clearContent(target: HTMLElement | Component): void
+    public static clearContent(target: any): void
     {
         let realElement = this.getRealElement(target);
 
@@ -85,7 +84,7 @@ export class ElementUtility
         }
     }
 
-    private static addToElement(target: HTMLElement | Component, content: HTMLElement | Component | string): void
+    private static addToElement(target: any, content: any): void
     {
         let realElement = this.getRealElement(target);
         const realContent = this.getRealContent(content);
@@ -99,7 +98,7 @@ export class ElementUtility
         }
     }
 
-    private static getRealElement(target: HTMLElement | Component): HTMLElement
+    private static getRealElement(target: any): HTMLElement
     {
         if (target instanceof HTMLElement) {
             return target;
@@ -108,7 +107,7 @@ export class ElementUtility
         }
     }
 
-    private static getRealContent(content: HTMLElement | Component | string): HTMLElement | string
+    private static getRealContent(content: any): HTMLElement | string
     {
         if (content instanceof Component) {
             return content.element;

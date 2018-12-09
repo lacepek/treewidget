@@ -1,11 +1,13 @@
 import IHtmlAttributes from "../interfaces/IhtmlAttributes";
-import { Component } from "../component";
+/**
+ * Utility for working with elements
+ */
 export declare class ElementUtility {
-    static createElement(tag: string, content?: HTMLElement | Component | string | Array<HTMLElement | Component | string>, attributes?: IHtmlAttributes): HTMLElement;
-    static setAttribute(target: HTMLElement | Component, name: string, value: any): void;
-    static addContent(target: HTMLElement | Component, content: HTMLElement | Component | string | Array<HTMLElement | Component | string>): void;
-    static setContent(target: HTMLElement | Component, content: HTMLElement | Component | string | Array<HTMLElement | Component | string>): void;
-    static clearContent(target: HTMLElement | Component): void;
+    static createElement(tag: string, content?: any, attributes?: IHtmlAttributes): HTMLElement;
+    static setAttribute(target: any, name: string, value: any): void;
+    static addContent(target: any, content: any): void;
+    static setContent(target: any, content: any): void;
+    static clearContent(target: any): void;
     private static addToElement;
     private static getRealElement;
     private static getRealContent;

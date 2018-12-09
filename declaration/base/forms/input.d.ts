@@ -1,5 +1,5 @@
 import { Component } from "../component";
-export default class Input extends Component {
+export default class Input extends Component<{}> {
     label: string;
     onChange: (event: Event, input: Input) => void;
     protected input: HTMLInputElement;

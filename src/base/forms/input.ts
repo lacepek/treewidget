@@ -1,7 +1,7 @@
 import { Component } from "../component";
 import { ElementUtility } from "../utility/elementUtility";
 
-export default class Input extends Component
+export default class Input extends Component<{}>
 {
     public label: string;
 
@@ -13,7 +13,7 @@ export default class Input extends Component
     {
         this.element = ElementUtility.createElement("div", null, { className: "form-group" });
 
-        const id = `input-${this.name}`;
+        const id = `input-${this.attributes.name}`;
         if (this.label) {
             const labelElement = ElementUtility.createElement("label", this.label, { forId: id });
             this.addContent(labelElement);

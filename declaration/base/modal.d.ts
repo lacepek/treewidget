@@ -1,10 +1,12 @@
 import { Component } from "./component";
-export declare class Modal extends Component {
+export declare class Modal extends Component<{
+    content: any;
+}> {
     title: {
         size: number;
         text: string;
     };
-    content: HTMLElement | Component | string | HTMLElement[] | Component[] | string[];
+    content: any;
     hasCloseButton: boolean;
     dismissButton: HTMLElement;
     confirmButton: HTMLElement;
@@ -12,9 +14,7 @@ export declare class Modal extends Component {
     onDismiss: () => void;
     onClose: () => void;
     private contentElement;
-    setContent(value: HTMLElement | Component | string | HTMLElement[] | Component[] | string[]): void;
-    addContent(value: HTMLElement | Component | string | HTMLElement[] | Component[] | string[]): void;
-    clearContent(): void;
+    init(): void;
     protected render(): void;
     protected close(): void;
     protected setDefaultProps(): void;

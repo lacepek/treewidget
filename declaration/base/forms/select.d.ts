@@ -1,5 +1,5 @@
 import { Component } from "../component";
-export default class Select extends Component {
+export default class Select extends Component<{}> {
     label: string;
     name: string;
     type: string;
@@ -7,8 +7,8 @@ export default class Select extends Component {
     disabled: boolean;
     onChange: (event: Event, select: Select) => void;
     protected select: HTMLSelectElement;
-    setContent(value: HTMLElement | Component | string | HTMLElement[] | Component[] | string[]): void;
-    addContent(value: HTMLElement | Component | string | HTMLElement[] | Component[] | string[]): void;
+    setContent(value: HTMLElement | Component<{}> | string | HTMLElement[] | Component<{}>[] | string[]): void;
+    addContent(value: HTMLElement | Component<{}> | string | HTMLElement[] | Component<{}>[] | string[]): void;
     clearContent(): void;
     render(): void;
     getValue(): string;

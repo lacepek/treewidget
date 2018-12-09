@@ -2,7 +2,7 @@ import { Component } from "./base/component";
 import { TreeLine, IOnClickData, IOnLineMoveData } from "./tree-line";
 import SortZone from "./base/containers/sortzone";
 import { IFormAttribute } from "./base/forms/IformAttribute";
-export declare class Tree extends Component {
+export declare class Tree extends Component<{}> {
     data: Array<IDataNode>;
     structure: {
         [name: string]: IStructure;
@@ -24,8 +24,8 @@ export declare class Tree extends Component {
     protected createEditLine(level: number, name: string, parent: HTMLElement): TreeLine;
 }
 export interface ITreeNode {
-    node: Component;
-    parent: Component;
+    node: Component<{}>;
+    parent: Component<{}>;
     children?: Array<ITreeNode>;
 }
 export interface ITreeEvents {

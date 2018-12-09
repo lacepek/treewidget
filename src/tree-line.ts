@@ -24,7 +24,7 @@ export class TreeLine extends Sortable
 
     protected render(): void
     {
-        super.render();
+        this.element = ElementUtility.createElement("div");
 
         this.element.addEventListener(
             "click",

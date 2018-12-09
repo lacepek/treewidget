@@ -1,7 +1,7 @@
 import { Component } from "../component";
 import { ElementUtility } from "../utility/elementUtility";
 
-export default class Select extends Component
+export default class Select extends Component<{}>
 {
     public label: string;
     public name: string;
@@ -13,14 +13,14 @@ export default class Select extends Component
 
     protected select: HTMLSelectElement;
 
-    public setContent(value: HTMLElement | Component | string | HTMLElement[] | Component[] | string[]): void
+    public setContent(value: HTMLElement | Component<{}> | string | HTMLElement[] | Component<{}>[] | string[]): void
     {
         if (this.select) {
             ElementUtility.setContent(this.select, value);
         }
     }
 
-    public addContent(value: HTMLElement | Component | string | HTMLElement[] | Component[] | string[]): void
+    public addContent(value: HTMLElement | Component<{}> | string | HTMLElement[] | Component<{}>[] | string[]): void
     {
         if (this.select) {
             ElementUtility.addContent(this.select, value);
@@ -38,10 +38,10 @@ export default class Select extends Component
     {
         this.element = ElementUtility.createElement("div", null, { className: "form-group" });
 
-        const id = `select-${this.name}`;
+        const id = `select-${this.attributes.name}`;
         if (this.label) {
             const labelElement = ElementUtility.createElement("label", this.label, { forId: id });
-            this.addContent(labelElement);
+            this.element.appendChild(labelElement);
         }
 
         this.select = ElementUtility.createElement("select", null, {

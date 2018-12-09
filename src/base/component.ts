@@ -2,7 +2,11 @@ import Configurable from "./configurable";
 import { ElementUtility } from "./utility/elementUtility";
 import IHtmlAttributes from "./interfaces/IhtmlAttributes";
 
-export class Component extends Configurable
+/**
+ * Base configurable component
+ * @template T type of state
+ */
+export class Component<T> extends Configurable
 {
     public attributes: IHtmlAttributes = null;
 
@@ -10,9 +14,11 @@ export class Component extends Configurable
     public element: HTMLElement;
     public parentSelector: string;
     public tag: string;
-    public parent: Component;
+    public parent: Component<T>;
 
     public events: any;
+
+    protected state: any;
 
     private _config: any = {};
 
@@ -26,7 +32,14 @@ export class Component extends Configurable
 
         this.init();
 
-        this.innerRender();
+        this.render();
+
+        this.postRender();
+
+        this.parentElement = this.getParentElement();
+        if (this.element && this.parentElement) {
+            ElementUtility.addContent(this.parentElement, this.element);
+        }
     }
 
     public setAttribute(name: string, value: any): void
@@ -36,14 +49,14 @@ export class Component extends Configurable
         }
     }
 
-    public setContent(value: HTMLElement | Component | string | Array<HTMLElement | Component | string>): void
+    public setContent(value: any): void
     {
         if (this.element) {
             ElementUtility.setContent(this.element, value);
         }
     }
 
-    public addContent(value: HTMLElement | Component | string | Array<HTMLElement | Component | string>): void
+    public addContent(value: any): void
     {
         if (this.element) {
             ElementUtility.addContent(this.element, value);
@@ -67,31 +80,35 @@ export class Component extends Configurable
         this.element.style.visibility = "hidden";
     }
 
+    public setState(state: T)
+    {
+        this.state = state;
+
+        this.clearContent();
+
+        this.render();
+    }
+
     protected init(): void
     {
         this.config(this._config);
-    }
-
-    protected render(): void
-    {
-        if (!this.element) {
-            this.element = ElementUtility.createElement(this.tag, null, this.attributes);
-        }
 
         this.parentElement = this.getParentElement();
-        if (this.parentElement) {
-            this.parentElement.appendChild(this.element);
-        }
     }
 
-    protected postRender(): void
-    {
+    protected render(): void { }
 
-    }
+    protected postRender(): void { }
 
     protected getParentElement(): HTMLElement
     {
-        return this.parentSelector ? document.querySelector(this.parentSelector) : this.parentElement;
+        if (this.parentElement) {
+            return this.parentElement;
+        } else if (this.parentSelector) {
+            return document.querySelector(this.parentSelector);
+        }
+
+        return null;
     }
 
     protected setDefaultProps(): void
@@ -102,12 +119,16 @@ export class Component extends Configurable
         this.parentSelector = null;
         this.tag = 'div';
         this.parent = null;
-    }
+        this.state = {};
+    };
 
-    private innerRender(): void
+
+    protected createElement(tag: string = this.tag, content?: any, attributes: IHtmlAttributes = this.attributes): HTMLElement
     {
-        this.render();
+        if (!tag) {
+            return null;
+        }
 
-        this.postRender();
+        return ElementUtility.createElement(tag, content, attributes);
     }
 }
