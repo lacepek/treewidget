@@ -1,123 +1,86 @@
-import { Component } from "./component";
-import { ElementUtility } from "./utility/elementUtility";
+import { Component } from './component';
+import { ElementUtility } from './utility/elementUtility';
 
-export class Modal extends Component<{content: any}>
+export class Modal extends Component<{ content: any }>
 {
-    public title: { size: number, text: string };
-    public content: any;
-    public hasCloseButton: boolean;
-    public dismissButton: HTMLElement;
-    public confirmButton: HTMLElement;
+  public title: { size: number, text: string };
+  public content: any;
+  public hasCloseButton: boolean;
 
-    public onConfirm: () => void;
-    public onDismiss: () => void;
-    public onClose: () => void;
+  public onClose: () => void;
 
-    private contentElement: HTMLElement;
+  private contentElement: HTMLElement;
 
-    public init()
-    {
-        super.init();
+  public init()
+  {
+    super.init();
 
-        this.state.content = this.content;
+    this.state.content = this.content;
+  }
+
+  protected render(): void
+  {
+    this.element.className = 'modal-overlay';
+
+    this.contentElement = this.createElement('div', null, { className: 'modal-window-body' });
+
+    const windowHeader = this.createElement('div', null, { className: 'modal-window-header' });
+    const windowFooter = this.createElement('div', null, { className: 'modal-window-footer' });
+
+    const window = this.createElement(
+      'div',
+      [windowHeader, this.contentElement, windowFooter],
+      { className: 'modal-window' }
+    );
+
+    if (this.title) {
+      const titleElement = this.createElement(`h${this.title.size}`, this.title.text);
+      windowHeader.appendChild(titleElement);
     }
 
-    protected render(): void
-    {
-        this.element = this.createElement("div");
-
-        this.element.className = "modal-overlay";
-        this.contentElement = ElementUtility.createElement("div", null, { className: "modal-window-body" });
-
-        const windowHeader = ElementUtility.createElement("div", null, { className: "modal-window-header" });
-        const windowFooter = ElementUtility.createElement("div", null, { className: "modal-window-footer" });
-
-        const window = ElementUtility.createElement(
-            "div",
-            [windowHeader, this.contentElement, windowFooter],
-            { className: "modal-window" }
-        );
-
-        if (this.title) {
-            const titleElement = ElementUtility.createElement(`h${this.title.size}`, this.title.text);
-            windowHeader.appendChild(titleElement);
-        }
-
-        if (this.hasCloseButton) {
-            const icon = ElementUtility.createElement("span", "&times;", { ariaHidden: "true" });
-            const closeButton = ElementUtility.createElement("button", icon, {
-                className: "close",
-                ariaLabel: "Close"
-            });
-            closeButton.addEventListener("click", () => { this.close() });
-            windowHeader.appendChild(closeButton);
-        }
-
-        if (this.state.content) {
-            this.addContent(this.state.content);
-        }
-
-        if (this.dismissButton) {
-            this.dismissButton.addEventListener("click", () =>
-            {
-                if (this.onDismiss) {
-                    this.onDismiss();
-                }
-                
-                this.close();
-            });
-        }
-        
-        if (this.confirmButton) {
-            this.confirmButton.addEventListener("click", () =>
-            {
-                if (this.onConfirm) {
-                    this.onConfirm();
-                }
-            });
-        }
-        
-        let buttonGroup = null;
-        if (this.dismissButton || this.confirmButton) {
-            buttonGroup = ElementUtility.createElement(
-                "div",
-                [this.dismissButton, this.confirmButton],
-                { className: "btn-group", role: "group" }
-            );
-        }
-
-        ElementUtility.addContent(windowFooter, buttonGroup);
-
-        this.element.addEventListener("click", (event: Event) =>
-        {
-            if (event.target === this.element) {
-                this.close()
-            }
-        });
-
-        ElementUtility.addContent(this.element, window);
-        console.log('foo');
+    if (this.hasCloseButton) {
+      const icon = this.createElement('span', '&times;', { ariaHidden: 'true' });
+      const closeButton = this.createElement('button', icon, {
+        className: 'close',
+        ariaLabel: 'Close'
+      });
+      closeButton.addEventListener('click', () => { this.close() });
+      windowHeader.appendChild(closeButton);
     }
 
-    protected close()
-    {
-        this.hide();
-
-        if (this.onClose) {
-            this.onClose();
-        }
+    if (this.state.content) {
+      ElementUtility.addContent(this.contentElement, this.state.content);
     }
 
-    protected setDefaultProps()
+    this.element.addEventListener('click', (event: Event) =>
     {
-        super.setDefaultProps();
+      if (event.target === this.element) {
+        this.close()
+      }
+    });
 
-        this.hasCloseButton = true;
-        this.confirmButton = null;
-        this.dismissButton = null;
+    this.addContent(window);
+  }
 
-        this.onConfirm = null;
-        this.onDismiss = null;
-        this.onClose = null;
+  protected close()
+  {
+    this.hide();
+
+    if (this.onClose) {
+      this.onClose();
     }
+  }
+
+  protected setDefaultProps()
+  {
+    super.setDefaultProps();
+
+    this.hasCloseButton = true;
+    this.confirmButton = null;
+    this.dismissButton = null;
+
+    this.onConfirm = null;
+    this.onDismiss = null;
+    this.onClose = null;
+  }
 }

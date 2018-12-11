@@ -1,16 +1,16 @@
-import { Draggable } from "./draggable";
+import { Draggable } from './draggable';
 
 export class Sortable extends Draggable
 {
-    public onSortSuccess(data: IOnSortSuccessData): void
-    {
-        
-    }
+  public onSortSuccess(data: OnSortSuccessData): void
+  {
+
+  }
 }
 
-export interface IOnSortSuccessData
+export interface OnSortSuccessData
 {
-    lastIndex: number;
-    index: number;
-    positionChange: number; 
+  lastIndex: number;
+  index: number;
+  positionChange: number;
 }

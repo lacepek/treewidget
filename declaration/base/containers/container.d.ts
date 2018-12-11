@@ -1,15 +1,14 @@
-import { Component } from "../component";
+import { Component } from '../component';
 export declare class Container<T> extends Component<T> {
-    protected children: Array<IContainerChild<T>>;
-    render(): void;
+    protected children: Array<ContainerChild<T>>;
     addChild(child: Component<T>): void;
-    findChildByElement(element: HTMLElement): IContainerChild<T>;
-    findChild(component: Component<T>): IContainerChild<T>;
+    findChildByElement(element: HTMLElement): ContainerChild<T>;
+    findChild(component: Component<T>): ContainerChild<T>;
     moveChild(fromIndex: number, toIndex: number): void;
     protected resetIndexes(): void;
     protected setDefaultProps(): void;
 }
-export interface IContainerChild<T> {
+export interface ContainerChild<T> {
     index: number;
     component: Component<T>;
 }

@@ -1,5 +1,5 @@
-import Configurable from "./configurable";
-import IHtmlAttributes from "./interfaces/IhtmlAttributes";
+import Configurable from './configurable';
+import IHtmlAttributes from './interfaces/htmlAttributes';
 /**
  * Base configurable component
  * @template T type of state
@@ -23,6 +23,7 @@ export declare class Component<T> extends Configurable {
     hide(): void;
     setState(state: T): void;
     protected init(): void;
+    protected preRender(): void;
     protected render(): void;
     protected postRender(): void;
     protected getParentElement(): HTMLElement;

@@ -124,9 +124,9 @@
                 'useFormEdit': true,
                 'items': {
                     'pk': { type: 'text', hidden: true },
-                    'nazev': { name:"skala", type: 'text', label: 'Otázka' },
+                    'nazev': { name:'skala', type: 'text', label: 'Otázka' },
                     'druh': {
-                        "name": "druh",
+                        'name': 'druh',
                         'type': 'select',
                         'label': 'Druh otázky',
                         'options': {
@@ -135,7 +135,7 @@
                         }
                     },
                     'dulezitost': {
-                        "name": "dulezitost",
+                        'name': 'dulezitost',
                         'type': 'checkbox',
                         'label': 'Dulezitost',
                         'options': {
@@ -149,32 +149,32 @@
 
         var data = [
             {
-                item: { nazev: "Parent 1", popis: "Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Lorem ipsum dolor sit amet, consectetuer adipiscing elit.", pk: "oblast-1" },
+                item: { nazev: 'Parent 1', popis: 'Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Lorem ipsum dolor sit amet, consectetuer adipiscing elit.', pk: 'oblast-1' },
                 children: [
                     {
-                        item: { nazev: "Child 1", popis: "Lorem ipsum dolor sit amet, consectetuer adipiscing elit.", pk: "kategorie-1" },
+                        item: { nazev: 'Child 1', popis: 'Lorem ipsum dolor sit amet, consectetuer adipiscing elit.', pk: 'kategorie-1' },
                         children: [
                             {
-                                item: { nazev: "Grandchild 1", druh: "skala", dulezitost: "ano", pk: "otazka-1" },
+                                item: { nazev: 'Grandchild 1', druh: 'skala', dulezitost: 'ano', pk: 'otazka-1' },
                             },
                             {
-                                item: { nazev: "Grandchild 2", druh: "skala", dulezitost: "ano", pk: "otazka-2" },
+                                item: { nazev: 'Grandchild 2', druh: 'skala', dulezitost: 'ano', pk: 'otazka-2' },
                             },
                             {
-                                item: { nazev: "Grandchild 3", druh: "skala", dulezitost: "ne", pk: "otazka-3" },
+                                item: { nazev: 'Grandchild 3', druh: 'skala', dulezitost: 'ne', pk: 'otazka-3' },
                             },
                             {
-                                item: { nazev: "Grandchild 4", druh: "text", pk: "otazka-4" },
+                                item: { nazev: 'Grandchild 4', druh: 'text', pk: 'otazka-4' },
                             }
                         ]
                     },
                     {
-                        item: { nazev: "Child 2", popis: "Lorem ipsum dolor sit amet, consectetuer adipiscing elit.", pk: "kategorie-2" },
+                        item: { nazev: 'Child 2', popis: 'Lorem ipsum dolor sit amet, consectetuer adipiscing elit.', pk: 'kategorie-2' },
                     }
                 ],
             },
             {
-                item: { nazev: "Parent 2", popis: "Lorem ipsum dolor sit amet, consectetuer adipiscing elit.", pk: "oblast-2" },
+                item: { nazev: 'Parent 2', popis: 'Lorem ipsum dolor sit amet, consectetuer adipiscing elit.', pk: 'oblast-2' },
             }
         ];
 

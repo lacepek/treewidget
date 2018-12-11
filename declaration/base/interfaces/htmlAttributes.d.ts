@@ -1,5 +1,4 @@
-export default interface IHtmlAttributes
-{
+export default interface HtmlAttributes {
     [key: string]: any;
     id?: string;
     className?: string;
@@ -13,3 +12,4 @@ export default interface IHtmlAttributes
     ariaHidden?: string;
     role?: string;
 }
+//# sourceMappingURL=htmlAttributes.d.ts.map

@@ -1,3 +1,6 @@
+export interface FormModel {
+    [name: string]: FormAttribute;
+}
 export interface FormAttribute {
     name: string;
     value: any;
@@ -13,4 +16,4 @@ export interface FormAttributeOption {
     value: any;
     disabled?: boolean;
 }
-//# sourceMappingURL=IformAttribute.d.ts.map
+//# sourceMappingURL=formModel.d.ts.map

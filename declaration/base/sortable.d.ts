@@ -1,8 +1,8 @@
-import { Draggable } from "./draggable";
+import { Draggable } from './draggable';
 export declare class Sortable extends Draggable {
-    onSortSuccess(data: IOnSortSuccessData): void;
+    onSortSuccess(data: OnSortSuccessData): void;
 }
-export interface IOnSortSuccessData {
+export interface OnSortSuccessData {
     lastIndex: number;
     index: number;
     positionChange: number;

@@ -1,1 +1,1 @@
-{"version":3,"file":"TreeWidget.d.ts","sourceRoot":"","sources":["../treewidget/src/TreeWidget.ts"],"names":[],"mappings":"AAEA,MAAM,CAAC,OAAO,CAAC,QAAQ,OAAO,UAAU;IAEpC,OAAO,CAAC,MAAM,CAAC,IAAI,CAAO;WACZ,MAAM,CAAC,MAAM,EAAE,MAAM,GAAG,IAAI;CAI7C"}
+{"version":3,"file":"treeWidget.d.ts","sourceRoot":"","sources":["../treewidget/src/treeWidget.ts"],"names":[],"mappings":"AAEA,MAAM,CAAC,OAAO,CAAC,QAAQ,OAAO,UAAU;IAEtC,OAAO,CAAC,MAAM,CAAC,IAAI,CAAO;WACZ,MAAM,CAAC,MAAM,EAAE,MAAM,GAAG,IAAI;CAI3C"}

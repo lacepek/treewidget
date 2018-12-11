@@ -1,9 +1,9 @@
-import IHtmlAttributes from "../interfaces/IhtmlAttributes";
+import HtmlAttributes from '../interfaces/htmlAttributes';
 /**
  * Utility for working with elements
  */
 export declare class ElementUtility {
-    static createElement(tag: string, content?: any, attributes?: IHtmlAttributes): HTMLElement;
+    static createElement(tag: string, content?: any, attributes?: HtmlAttributes): HTMLElement;
     static setAttribute(target: any, name: string, value: any): void;
     static addContent(target: any, content: any): void;
     static setContent(target: any, content: any): void;

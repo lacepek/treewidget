@@ -1,4 +1,4 @@
-export default interface IHtmlAttributes {
+export default interface HtmlAttributes {
     [key: string]: any;
     id?: string;
     className?: string;

@@ -1,4 +1,4 @@
-import { Component } from "./component";
+import { Component } from './component';
 export declare class Modal extends Component<{
     content: any;
 }> {
@@ -8,10 +8,6 @@ export declare class Modal extends Component<{
     };
     content: any;
     hasCloseButton: boolean;
-    dismissButton: HTMLElement;
-    confirmButton: HTMLElement;
-    onConfirm: () => void;
-    onDismiss: () => void;
     onClose: () => void;
     private contentElement;
     init(): void;

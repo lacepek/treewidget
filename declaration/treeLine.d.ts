@@ -1,5 +1,5 @@
-import { TreeEvents, DataNode, Structure, StructureItem } from "./tree";
-import { Sortable, OnSortSuccessData } from "./base/sortable";
+import { TreeEvents, DataNode, Structure, StructureItem } from './tree';
+import { Sortable, OnSortSuccessData } from './base/sortable';
 export declare class TreeLine extends Sortable {
     level: number;
     data: DataNode;
@@ -29,4 +29,4 @@ export interface LineData {
 }
 export interface OnLineMoveData extends LineData, OnSortSuccessData {
 }
-//# sourceMappingURL=tree-line.d.ts.map
+//# sourceMappingURL=treeLine.d.ts.map

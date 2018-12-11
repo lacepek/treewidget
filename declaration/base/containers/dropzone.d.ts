@@ -1,7 +1,7 @@
-import { Draggable } from "../draggable";
-import { Container, IContainerChild } from "./container";
+import { Draggable } from '../draggable';
+import { Container, ContainerChild } from './container';
 export declare class DropZone extends Container<{}> {
-    current: IContainerChild<{}>;
+    current: ContainerChild<{}>;
     setCurrent(draggable: Draggable): void;
     protected postRender(): void;
     protected initEvents(): void;

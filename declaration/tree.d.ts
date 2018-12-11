@@ -1,47 +1,48 @@
-import { Component } from "./base/component";
-import { TreeLine, IOnClickData, IOnLineMoveData } from "./tree-line";
-import SortZone from "./base/containers/sortzone";
-import { IFormAttribute } from "./base/forms/IformAttribute";
+import { Component } from './base/component';
+import { TreeLine, LineData, OnLineMoveData } from './treeLine';
+import SortZone from './base/containers/sortzone';
+import { FormModel, FormAttribute } from './base/forms/interfaces/formModel';
 export declare class Tree extends Component<{}> {
-    data: Array<IDataNode>;
+    data: Array<DataNode>;
     structure: {
-        [name: string]: IStructure;
+        [name: string]: Structure;
     };
     canEdit: boolean;
-    events: ITreeEvents;
-    options: ITreeConfig;
-    nodes: Array<ITreeNode>;
+    events: TreeEvents;
+    options: TreeConfig;
+    nodes: Array<TreeNode>;
     private modal;
     protected render(): void;
     protected setDefaultProps(): void;
-    protected createLines(data: Array<any>, nodes: Array<ITreeNode>, parentNode: ITreeNode, level: number, iterator: {
+    protected createLines(data: Array<any>, nodes: Array<TreeNode>, parentNode: TreeNode, level: number, iterator: {
         count: number;
     }, parent: HTMLElement, sortZone?: SortZone): void;
     protected addEditLine(line: TreeLine): void;
-    protected createAddLine(level: number, count: number, parentElement: HTMLElement, data: IDataNode, structure: IStructure, options?: object): TreeLine;
-    protected addLine(data: IDataNode, structure: IStructure): void;
-    protected createLine(level: number, count: number, isSortable: boolean, parentElement: HTMLElement, data: IDataNode, structure: IStructure, options?: object, sortZone?: SortZone): TreeLine;
+    protected createAddLine(level: number, count: number, parentElement: HTMLElement, data: DataNode, structure: Structure, options?: object): TreeLine;
+    protected addLine(data: DataNode, structure: Structure): void;
+    protected createLine(level: number, count: number, isSortable: boolean, parentElement: HTMLElement, data: DataNode, structure: Structure, options?: object, sortZone?: SortZone): TreeLine;
     protected createEditLine(level: number, name: string, parent: HTMLElement): TreeLine;
 }
-export interface ITreeNode {
+export interface TreeNode {
     node: Component<{}>;
     parent: Component<{}>;
-    children?: Array<ITreeNode>;
+    children?: Array<TreeNode>;
 }
-export interface ITreeEvents {
-    onLineClick?: (data: IOnClickData, item: HTMLElement) => void;
-    onLineMove?: (data: IOnLineMoveData, item: HTMLElement) => void;
+export interface TreeEvents {
+    onLineClick?: (data: LineData, item: HTMLElement) => void;
+    onLineMove?: (data: OnLineMoveData, item: HTMLElement) => void;
+    onSubmit?: (model: FormModel) => void;
 }
-export interface ITreeConfig {
+export interface TreeConfig {
     addLineText: string;
 }
-export interface IDataNode {
+export interface DataNode {
     item: {
         [name: string]: string;
     };
-    children?: Array<IDataNode>;
+    children?: Array<DataNode>;
 }
-export interface IStructure {
+export interface Structure {
     name: string;
     parent: string | null;
     isSortable?: boolean;
@@ -50,10 +51,10 @@ export interface IStructure {
         class?: string;
     };
     items?: {
-        [name: string]: IStructureItem;
+        [name: string]: StructureItem;
     };
 }
-export interface IStructureItem extends IFormAttribute {
+export interface StructureItem extends FormAttribute {
     hidden?: string;
 }
 //# sourceMappingURL=tree.d.ts.map

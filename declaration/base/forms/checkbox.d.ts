@@ -1,4 +1,4 @@
-import { Component } from "../component";
+import { Component } from '../component';
 export default class Checkbox extends Component<{}> {
     label: string;
     onChange: (event: Event, input: Checkbox) => void;
