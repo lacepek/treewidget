@@ -1,5 +1,7 @@
 import { Component } from '../component';
+import { FormAttribute } from './interfaces/formModel';
 export default class Checkbox extends Component<{}> {
+    formAttribute: FormAttribute;
     label: string;
     onChange: (event: Event, input: Checkbox) => void;
     protected checkbox: HTMLInputElement;

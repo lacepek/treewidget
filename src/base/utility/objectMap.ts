@@ -1,11 +1,11 @@
 export default function objectMap(object: object, callback: any): any
 {
-  let result = [];
+  let result: { [key: string]: string } = {};
   for (const key in object) {
     let value = (object as any)[key];
     let callbackResult = callback(value);
 
-    result.push(callbackResult);
+    result[key] = callbackResult;
   }
 
   return result;

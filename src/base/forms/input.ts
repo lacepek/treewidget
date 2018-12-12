@@ -1,11 +1,13 @@
 import { Component } from '../component';
 import { ElementUtility } from '../utility/elementUtility';
+import { FormAttribute } from './interfaces/formModel';
 
 export default class Input extends Component<{}>
 {
+  public formAttribute: FormAttribute;
   public label: string;
 
-  public onChange: (event: Event, input: Input) => void;
+  public onChange: (event: Event, input: Input, formAttribute: FormAttribute) => void;
 
   protected input: HTMLInputElement;
 
@@ -19,30 +21,32 @@ export default class Input extends Component<{}>
       this.addContent(labelElement);
     }
 
-    this.input = ElementUtility.createElement('input', null, {
+    this.input = this.createElement('input', null, {
       ...{ className: 'form-control', id }, ...this.attributes
     }) as HTMLInputElement;
 
-    if (this.onChange) {
-      this.input.addEventListener('change', (event: Event) => { this.onChange(event, this) });
-    }
+    this.input.onchange = (event: Event) =>
+    {
+      this.setValue(this.input.value);
+
+      if (this.onChange) {
+        this.onChange(event, this, this.formAttribute)
+      }
+    };
 
     this.element.appendChild(this.input);
 
-    this.parentElement = this.getParentElement();
-    if (this.parentElement) {
-      this.parentElement.appendChild(this.element);
-    }
+    this.setValue(this.input.value);
   }
 
   public getValue(): string
   {
-    return this.input.value;
+    return this.formAttribute.value;
   }
 
-  public setValue(value: any): void
+  public setValue(value: string): void
   {
-    this.input.value = value;
+    this.formAttribute.value = value;
   }
 
   protected setDefaultProps(): void

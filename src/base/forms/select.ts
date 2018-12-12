@@ -1,13 +1,11 @@
 import { Component } from '../component';
 import { ElementUtility } from '../utility/elementUtility';
+import { FormAttribute } from './interfaces/formModel';
 
 export default class Select extends Component<{}>
 {
+  public formAttribute: FormAttribute;
   public label: string;
-  public name: string;
-  public type: string;
-  public value: string;
-  public disabled: boolean;
 
   public onChange: (event: Event, select: Select) => void;
 
@@ -40,11 +38,11 @@ export default class Select extends Component<{}>
 
     const id = `select-${this.attributes.name}`;
     if (this.label) {
-      const labelElement = ElementUtility.createElement('label', this.label, { forId: id });
+      const labelElement = this.createElement('label', this.label, { forId: id });
       this.element.appendChild(labelElement);
     }
 
-    this.select = ElementUtility.createElement('select', null, {
+    this.select = this.createElement('select', null, {
       className: 'form-control',
       type: this.type,
       name: this.name,
@@ -53,26 +51,28 @@ export default class Select extends Component<{}>
       disabled: this.disabled
     }) as HTMLSelectElement;
 
-    if (this.onChange) {
-      this.select.addEventListener('change', (event: Event) => { this.onChange(event, this) });
-    }
+    this.select.onchange = (event: Event) =>
+    {
+      this.setValue(this.select.value);
+
+      if (this.onChange) {
+        this.onChange(event, this)
+      }
+    };
 
     this.element.appendChild(this.select);
 
-    this.parentElement = this.getParentElement();
-    if (this.parentElement) {
-      this.parentElement.appendChild(this.element);
-    }
+    this.setValue(this.select.value);
   }
 
   public getValue(): string
   {
-    return this.input.value;
+    return this.formAttribute.value;
   }
 
-  public setValue(value: any): void
+  public setValue(value: string): void
   {
-    this.input.value = value;
+    this.formAttribute.value = value;
   }
 
   protected setDefaultProps(): void

@@ -1,8 +1,9 @@
 import { Component } from '../component';
-import { ElementUtility } from '../utility/elementUtility';
+import { FormAttribute } from './interfaces/formModel';
 
 export default class Checkbox extends Component<{}>
 {
+  public formAttribute: FormAttribute;
   public label: string;
 
   public onChange: (event: Event, input: Checkbox) => void;
@@ -15,37 +16,39 @@ export default class Checkbox extends Component<{}>
 
     const id = `checkbox-${this.attributes.name}`;
 
-    this.checkbox = ElementUtility.createElement('input', null, {
+    this.checkbox = this.createElement('input', null, {
       ...{ className: 'form-check-input', id }, ...this.attributes
     }) as HTMLInputElement;
 
-    if (this.onChange) {
-      this.checkbox.addEventListener('change', (event: Event) => { this.onChange(event, this) });
-    }
+    this.checkbox.onchange = (event: Event) =>
+    {
+      this.setValue(this.checkbox.checked);
+
+      if (this.onChange) {
+        this.onChange(event, this);
+      }
+    };
 
     this.addContent(this.checkbox);
 
     const label = this.label;
     if (label) {
       const labelClass = 'form-check-label';
-      const labelElement = ElementUtility.createElement('label', label, { className: labelClass, forId: id });
+      const labelElement = this.createElement('label', label, { className: labelClass, forId: id });
       this.addContent(labelElement);
     }
 
-    this.parentElement = this.getParentElement();
-    if (this.parentElement) {
-      this.parentElement.appendChild(this.element);
-    }
+    this.setValue(this.checkbox.checked);
   }
 
   public getValue(): boolean
   {
-    return this.checkbox.checked;
+    return this.formAttribute.value;
   }
 
   public setValue(value: boolean): void
   {
-    this.checkbox.checked = value;
+    this.formAttribute.value = value;
   }
 
   protected setDefaultProps(): void

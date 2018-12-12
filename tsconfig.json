@@ -12,6 +12,11 @@
         "declaration": true,
         "declarationDir": "../declaration",
         "declarationMap": true,
+        "lib": [
+			"es6",
+			"dom",
+			"es2015"
+		],
     },
     "include": [
         "src/**/*"

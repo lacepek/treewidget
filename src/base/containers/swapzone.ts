@@ -2,9 +2,8 @@ import { DropZone } from './dropzone';
 
 export default class SwapZone extends DropZone
 {
-  public onDrop(event: Event): void
+  public onDrop(event: Event, target: HTMLElement): void
   {
-    let target = event.target as HTMLElement;
     let dragged = this.current.component.element;
     let nextSibling = target.nextElementSibling;
 
@@ -20,5 +19,24 @@ export default class SwapZone extends DropZone
         this.element.appendChild(dragged);
       }
     }
+  }
+
+  protected registerOnDropEvent(): void
+  {
+    this.element.addEventListener('drop', (event: Event) =>
+    {
+      let target = this.findTarget(event.target as HTMLElement);
+      return this.onDrop(event, target);
+    });
+  }
+
+  private findTarget(target: HTMLElement): HTMLElement
+  {
+    if (!target.draggable) {
+      target = target.parentElement;
+      this.findTarget(target);
+    }
+
+    return target;
   }
 }

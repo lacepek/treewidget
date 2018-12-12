@@ -124,11 +124,12 @@
                 'useFormEdit': true,
                 'items': {
                     'pk': { type: 'text', hidden: true },
-                    'nazev': { name:'skala', type: 'text', label: 'Otázka' },
+                    'nazev': { name: 'skala', type: 'text', label: 'Otázka' },
                     'druh': {
                         'name': 'druh',
                         'type': 'select',
                         'label': 'Druh otázky',
+                        'defaultValue': 'skala',
                         'options': {
                             'skala': { 'key': 'skala', 'value': 'Otazka na skale' },
                             'text': { 'key': 'text', 'value': 'Volny text' }
@@ -185,7 +186,12 @@
             canEdit: true,
             events: {
                 onLineClick: (data, item) => { /*console.log(data); console.log(item)*/ },
-                onLineMove: (data, item) => { /*console.log(data); console.log(item)*/ }
+                onLineMove: (data, item) => { /*console.log(data); console.log(item)*/ },
+                onLineEditSubmit: async (model) => {
+                    console.log(model);
+                    
+                    return true;
+                }
             },
             options: {
                 addLineText: 'Přidat řádek +++'

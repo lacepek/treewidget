@@ -37,7 +37,11 @@ export class TreeLine extends Sortable
       className = `${className} tree-line-odd`;
     }
 
-    this.setAttribute('className', className);
+    if (this.attributes.className) {
+      className = `${className} ${this.attributes.className}`;
+    }
+
+    this.setAttribute('class', className);
 
     if (this.parentElement) {
       if (this.canDrag) {
@@ -65,8 +69,9 @@ export class TreeLine extends Sortable
     if (items) {
       const visibleItemCount = this.getVisibleItemCount(items);
       let isOffset = false;
+      
       for (const key in items) {
-        if (this.data.item[key]) {
+        if (key in this.data.item) {
           const item = items[key];
           const value = this.getItemValue(key, item);
 

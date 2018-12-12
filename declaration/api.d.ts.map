@@ -1,1 +1,0 @@
-{"version":3,"file":"api.d.ts","sourceRoot":"","sources":["../treewidget/src/api.ts"],"names":[],"mappings":"AAEA,MAAM,CAAC,OAAO,CAAC,QAAQ,OAAO,GAAG;IAE7B,OAAO,CAAC,MAAM,CAAC,IAAI,CAAC;WACN,MAAM,CAAC,MAAM,EAAE,GAAG,GAAG,IAAI;CAK1C"}

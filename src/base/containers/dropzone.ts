@@ -4,6 +4,9 @@ import { Container, ContainerChild } from './container';
 export class DropZone extends Container<{}>
 {
   public current: ContainerChild<{}>;
+  public canDrop: boolean;
+
+  private hasRegisteredEvents: boolean = false;
 
   public setCurrent(draggable: Draggable): void
   {
@@ -14,20 +17,22 @@ export class DropZone extends Container<{}>
     }
   }
 
-  protected postRender()
+  protected render(): void
   {
-    super.postRender();
+    super.render();
 
     this.initEvents();
   }
 
   protected initEvents(): void
   {
-    if (this.element) {
+    if (!this.hasRegisteredEvents && this.canDrop && this.element) {
       this.element.addEventListener('dragover', this.onDragOver);
       this.element.addEventListener('dragenter', this.onDragEnter);
       this.element.addEventListener('dragleave', this.onDragLeave);
-      this.element.addEventListener('drop', (event: Event) => { return this.onDrop(event) });
+      this.registerOnDropEvent();
+
+      this.hasRegisteredEvents = true;
     }
   }
 
@@ -46,11 +51,19 @@ export class DropZone extends Container<{}>
     //throw new Error('onDragLeave not implemented.');
   }
 
-  protected onDrop(event: Event): void
+  protected onDrop(event: Event, target: HTMLElement): void
   {
-    let target = event.target as HTMLElement;
     let draggable = this.current.component;
     this.element.insertBefore(draggable.element, target);
+  }
+
+  protected registerOnDropEvent()
+  {
+    this.element.addEventListener('drop', (event: Event) =>
+    {
+      const target = event.target as HTMLElement;
+      return this.onDrop(event, target)
+    });
   }
 
   protected setDefaultProps(): void
@@ -58,5 +71,6 @@ export class DropZone extends Container<{}>
     super.setDefaultProps();
 
     this.current = null;
+    this.canDrop = true;
   }
 }

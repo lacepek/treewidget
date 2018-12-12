@@ -1,20 +1,27 @@
 import { FormAttribute, FormAttributeOption } from './interfaces/formModel';
 import { Component } from '../component';
-import objectMap from '../utility/objectMap';
 import Input from './input';
 import { ElementUtility } from '../utility/elementUtility';
 import Select from './select';
 import Checkbox from './checkbox';
+import objectMapArray from '../utility/objectMapArray';
 
 export class DynamicForm extends Component<{}>
 {
   public model: { [name: string]: FormAttribute };
 
-  public onSubmitForm: (model: { [name: string]: FormAttribute }) => void;
+  public onSubmit: (model: { [name: string]: FormAttribute }) => void;
 
   protected render(): void
   {
-    this.element.onsubmit = (event: Event) => this.onSubmit(event);
+    this.element.onsubmit = (event: Event) =>
+    {
+      if (this.onSubmit) {
+        this.onSubmit(this.model);
+      }
+
+      return false;
+    };
 
     if (this.model) {
       const form = this.renderForm();
@@ -30,20 +37,11 @@ export class DynamicForm extends Component<{}>
     this.tag = 'form';
   }
 
-  protected onSubmit(event: any)
-  {
-    event.preventDefault();
-    console.log('onSubmit');
-    if (this.onSubmitForm) {
-      this.onSubmitForm(this.model);
-    }
-  }
-
   protected renderForm(): Array<Component<{}>>
   {
     const attributes = this.model;
 
-    const formContent = objectMap(attributes, (attribute: FormAttribute) =>
+    const formContent = objectMapArray(attributes, (attribute: FormAttribute) =>
     {
       const { type } = attribute;
 
@@ -127,32 +125,32 @@ export class DynamicForm extends Component<{}>
     return ElementUtility.createElement('div');
   }
 
-  protected renderSelect(attribute: FormAttribute): Select
+  protected renderSelect(formAttribute: FormAttribute): Select
   {
-    const { name, value, options, label, disabled } = attribute;
+    const { name, value, options, label, disabled } = formAttribute;
 
-    const optionElements = objectMap(options, (option: FormAttributeOption) => 
+    const optionElements = objectMapArray(options, (option: FormAttributeOption) => 
     {
       const id = `option-${name}-${option.key}`;
       return ElementUtility.createElement('option', option.value, { id });
     });
 
     const selectId = `select-${name}`;
-    const selectElement = new Select({ label, attributes: { name, disabled, value, id: selectId } });
+    const selectElement = new Select({ formAttribute, label, attributes: { name, disabled, value, id: selectId } });
 
     selectElement.addContent(optionElements);
 
     return selectElement;
   }
 
-  protected renderCheckbox(attribute: FormAttribute): Checkbox
+  protected renderCheckbox(formAttribute: FormAttribute): Checkbox
   {
-    const { name, type, label, value, disabled } = attribute;
+    const { name, type, label, value, disabled } = formAttribute;
     const checked = value;
 
     const checkbox = new Checkbox({
+      formAttribute,
       label,
-      onChange: this.onTextChange,
       attributes: { name, disabled, value, type }
     });
 
@@ -161,22 +159,17 @@ export class DynamicForm extends Component<{}>
     return checkbox;
   }
 
-  private renderText(attribute: FormAttribute): Input
+  private renderText(formAttribute: FormAttribute): Input
   {
-    const { name, type, label, value, disabled } = attribute;
+    const { name, type, label, value, disabled } = formAttribute;
 
     const input = new Input({
+      formAttribute,
       label,
-      onChange: this.onTextChange,
       attributes: { name, disabled, value, type }
     });
 
     return input;
-  }
-
-  protected onTextChange(event: Event, input: Input)
-  {
-
   }
 
   /*protected onSelectChange(event: React.ChangeEvent<HTMLSelectElement>, key: string)

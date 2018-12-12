@@ -1,12 +1,11 @@
-import { DropZone } from './dropzone';
 import { Sortable } from '../sortable';
+import SwapZone from './swapzone';
 
-export default class SortZone extends DropZone
+export default class SortZone extends SwapZone
 {
-  public onDrop(event: Event): void
+  public onDrop(event: Event, target: HTMLElement): void
   {
-    let target = event.target as HTMLElement;
-
+    console.log(target);
     let dragged = this.current.component.element;
 
     // if dragged is target do nothing 
