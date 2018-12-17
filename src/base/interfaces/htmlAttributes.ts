@@ -12,4 +12,5 @@ export default interface HtmlAttributes
   ariaLabel?: string;
   ariaHidden?: string;
   role?: string;
+  selected?: boolean;
 }

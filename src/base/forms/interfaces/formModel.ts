@@ -10,6 +10,7 @@ export interface FormAttribute
   type: string;
   label?: string;
   disabled?: boolean;
+  isHidden?: boolean;
   options?: { [name: string]: FormAttributeOption }
 }
 

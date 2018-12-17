@@ -1,6 +1,7 @@
 import { TreeEvents, DataNode, Structure, StructureItem } from './tree';
 import { Sortable, OnSortSuccessData } from './base/sortable';
 import { ElementUtility } from './base/utility/elementUtility';
+import { Container } from './base/containers/container';
 
 export class TreeLine extends Sortable
 {
@@ -50,7 +51,10 @@ export class TreeLine extends Sortable
 
       if (this.text) {
         this.element.innerHTML = this.text;
-      } else {
+
+        const offset = 10 + 20 * this.level;
+        this.element.style.paddingLeft = `${offset}px`;
+      } else if (this.data) {
         this.createItems();
       }
     }
@@ -69,13 +73,13 @@ export class TreeLine extends Sortable
     if (items) {
       const visibleItemCount = this.getVisibleItemCount(items);
       let isOffset = false;
-      
+
       for (const key in items) {
         if (key in this.data.item) {
           const item = items[key];
           const value = this.getItemValue(key, item);
 
-          if (!item.hidden) {
+          if (!item.isHidden) {
             let itemElement = this.createItem(value, visibleItemCount);
 
             if (!isOffset) {
@@ -121,7 +125,7 @@ export class TreeLine extends Sortable
     for (const key in items) {
       const item = items[key];
 
-      if (!item.hidden) {
+      if (!item.isHidden) {
         count++;
       }
     }

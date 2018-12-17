@@ -5,6 +5,8 @@ import { ElementUtility } from '../utility/elementUtility';
 import Select from './select';
 import Checkbox from './checkbox';
 import objectMapArray from '../utility/objectMapArray';
+import Radio from './radio';
+import objectFilter from '../utility/objectFilter';
 
 export class DynamicForm extends Component<{}>
 {
@@ -39,7 +41,9 @@ export class DynamicForm extends Component<{}>
 
   protected renderForm(): Array<Component<{}>>
   {
-    const attributes = this.model;
+    const attributes = objectFilter(this.model, (attribute: FormAttribute) => {
+      return !attribute.isHidden;
+    });
 
     const formContent = objectMapArray(attributes, (attribute: FormAttribute) =>
     {
@@ -48,7 +52,7 @@ export class DynamicForm extends Component<{}>
       let input = null;
       switch (type) {
         case 'radio':
-          input = this.renderRadioList(attribute);
+          input = this.renderRadio(attribute);
           break;
         case 'select':
           input = this.renderSelect(attribute);
@@ -67,62 +71,11 @@ export class DynamicForm extends Component<{}>
     return formContent;
   }
 
-  protected renderRadioList(attribute: FormAttribute): HTMLElement
+  protected renderRadio(formAttribute: FormAttribute): Radio
   {
-    /*const { key, type, options, label } = attribute;
+    const radio = new Radio({formAttribute});
 
-    let radioElement = objectMap(options, (option: IFormAttributeOption) =>
-    {
-        return this.renderRadio(key, type, option);
-    });
-
-    const radioId = `input-wrapper-${key}`;
-    const radioWrapper = <div id={radioId}>{radioElement}</div>;
-    let labelElement = null;
-
-    if (label) {
-        labelElement = <label htmlFor={radioId}>{label}</label>;
-    }
-
-    return (
-        <div key={key} className='form-group'>
-            {labelElement}
-            {radioWrapper}
-        </div>
-    );*/
-    return ElementUtility.createElement('div');
-  }
-
-  protected renderRadio(key: string, type: string, option: FormAttributeOption): HTMLElement
-  {
-    /*const checked = this.state.model.getAttribute(key).value === option.key;
-
-    const radioKey = `${key}-${option.key}`, id = `radio-${radioKey}`,
-        labelId = `${id}-label`, groupId = `${id}-group`;
-
-    const radioElement = <input
-        className='form-check-input'
-        type={type}
-        id={id}
-        name={key}
-        key={id}
-        checked={checked}
-        value={option.value}
-        disabled={option.disabled}
-        onChange={
-            (event: React.ChangeEvent<HTMLInputElement>) => { this.onRadioChange(event, key, option.key) }
-        }
-    />;
-    const labelElement = <label id={labelId} htmlFor={id}>{option.value}</label>;
-
-    return (
-        <div className='form-check' key={radioKey} id={groupId}>
-            {radioElement}
-            {labelElement}
-        </div>
-    );*/
-
-    return ElementUtility.createElement('div');
+    return radio;
   }
 
   protected renderSelect(formAttribute: FormAttribute): Select
@@ -132,9 +85,9 @@ export class DynamicForm extends Component<{}>
     const optionElements = objectMapArray(options, (option: FormAttributeOption) => 
     {
       const id = `option-${name}-${option.key}`;
-      return ElementUtility.createElement('option', option.value, { id });
+      const selected = value === option.key;
+      return ElementUtility.createElement('option', option.value, { id, value: option.key, selected });
     });
-
     const selectId = `select-${name}`;
     const selectElement = new Select({ formAttribute, label, attributes: { name, disabled, value, id: selectId } });
 
@@ -171,46 +124,4 @@ export class DynamicForm extends Component<{}>
 
     return input;
   }
-
-  /*protected onSelectChange(event: React.ChangeEvent<HTMLSelectElement>, key: string)
-  {
-      const input = this.references[key].current;
-
-      let value = input.value;
-
-      this.validate(key, value);
-
-      this.state.model.setValue(key, value);
-  }
-
-  protected onRadioChange(event: React.ChangeEvent<HTMLInputElement>, key: string, optionKey: any)
-  {
-      this.validate(key, optionKey);
-
-      this.state.model.setValue(key, optionKey);
-
-      this.setState({ model: this.state.model });
-  }
-
-  protected onCheckboxChange(event: React.ChangeEvent<HTMLInputElement>, key: string)
-  {
-      let value = event.target.checked;
-
-      this.validate(key, value);
-
-      this.state.model.setValue(key, value);
-
-      this.setState({ model: this.state.model });
-  }
-
-  private validate(key: string, value: any): any
-  {
-      const { type } = this.state.model.getAttribute(key);
-
-      if (type === 'number') {
-          value = parseInt(value, 10);
-      }
-
-      return value;
-  }*/
 }

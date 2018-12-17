@@ -101,32 +101,42 @@
         var structure = {
             'oblast': {
                 'name': 'oblast',
+                'label': 'oblast',
+                'addLineText': 'Přidat oblast',
                 'parent': null,
-                'isSortable': true,
+                'useModalEdit': true,
+                'canEdit': true,
                 'items': {
-                    'pk': { type: 'text', hidden: true },
-                    'nazev': { type: 'text', label: 'Nazev' },
-                    'popis': { type: 'text', 'label': 'Popis' }
+                    'pk': { 'type': 'text', 'isHidden': true },
+                    'nazev': { 'type': 'text', 'label': 'Nazev' },
+                    'popis': { 'type': 'text', 'label': 'Popis' }
                 }
             },
             'kategorie': {
                 'name': 'kategorie',
+                'label': 'kategorie',
+                'addLineText': 'Přidat kategorii',
                 'parent': 'oblast',
-                'isSortable': true,
+                'useModalEdit': true,
+                'canEdit': true,
                 'items': {
-                    'pk': { type: 'text', hidden: true },
-                    'nazev': { type: 'text', label: 'Nazev' },
-                    'popis': { type: 'text', 'label': 'Popis' }
+                    'pk': { 'type': 'text', 'isHidden': true },
+                    'nazev': { 'type': 'text', 'label': 'Nazev' },
+                    'popis': { 'type': 'text', 'label': 'Popis' }
                 }
             },
             'otazka': {
                 'name': 'otazka',
+                'label': 'otázka',
+                'addLineText': 'Přidat otázku',
                 'parent': 'kategorie',
                 'useModalEdit': true,
                 'isSortable': true,
+                'useModalEdit': true,
+                'canEdit': true,
                 'items': {
-                    'pk': { type: 'text', hidden: true },
-                    'nazev': { name: 'skala', type: 'text', label: 'Otázka' },
+                    'pk': { 'type': 'text', 'isHidden': true },
+                    'nazev': { 'name': 'nazev', 'type': 'text', 'label': 'Otázka' },
                     'druh': {
                         'name': 'druh',
                         'type': 'select',
@@ -139,7 +149,7 @@
                     },
                     'dulezitost': {
                         'name': 'dulezitost',
-                        'type': 'checkbox',
+                        'type': 'radio',
                         'label': 'Dulezitost',
                         'options': {
                             'ano': { 'key': 'ano', 'value': 'Ano' },
@@ -152,22 +162,22 @@
 
         var data = [
             {
-                item: { nazev: 'Parent 1', popis: 'Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Lorem ipsum dolor sit amet, consectetuer adipiscing elit.', pk: 'oblast-1' },
-                children: [
+                'item': { 'nazev': 'Parent 1', 'popis': 'Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Lorem ipsum dolor sit amet, consectetuer adipiscing elit.', 'pk': 'oblast-1' },
+                'children': [
                     {
-                        item: { nazev: 'Child 1', popis: 'Lorem ipsum dolor sit amet, consectetuer adipiscing elit.', pk: 'kategorie-1' },
-                        children: [
+                        'item': { 'nazev': 'Child 1', 'popis': 'Lorem ipsum dolor sit amet, consectetuer adipiscing elit.', 'pk': 'kategorie-1' },
+                        'children': [
                             {
-                                item: { nazev: 'Grandchild 1', druh: 'skala', dulezitost: 'ano', pk: 'otazka-1' },
+                                'item': { 'nazev': 'Grandchild 1', 'druh': 'skala', 'dulezitost': 'ano', 'pk': 'otazka-1' },
                             },
                             {
-                                item: { nazev: 'Grandchild 2', druh: 'skala', dulezitost: 'ano', pk: 'otazka-2' },
+                                'item': { 'nazev': 'Grandchild 2', 'druh': 'skala', 'dulezitost': 'ano', 'pk': 'otazka-2' },
                             },
                             {
-                                item: { nazev: 'Grandchild 3', druh: 'skala', dulezitost: 'ne', pk: 'otazka-3' },
+                                'item': { 'nazev': 'Grandchild 3', 'druh': 'skala', 'dulezitost': 'ne', 'pk': 'otazka-3' },
                             },
                             {
-                                item: { nazev: 'Grandchild 4', druh: 'text', pk: 'otazka-4' },
+                                'item': { 'nazev': 'Grandchild 4', 'druh': 'text', 'pk': 'otazka-4' },
                             }
                         ]
                     },
@@ -185,7 +195,7 @@
                 ],
             },
             {
-                item: { nazev: 'Parent 2', popis: 'Lorem ipsum dolor sit amet, consectetuer adipiscing elit.', pk: 'oblast-2' },
+                'item': { 'nazev': 'Parent 2', 'popis': 'Lorem ipsum dolor sit amet, consectetuer adipiscing elit.', 'pk': 'oblast-2' },
             }
         ];
 
@@ -197,15 +207,19 @@
             events: {
                 onLineClick: (data, item) => { /*console.log(data); console.log(item)*/ },
                 onLineMove: (data, item) => { /*console.log(data); console.log(item)*/ },
+                onLineAddSubmit: async (model) => {
+                    console.log(model);
+
+                    model.pk = Math.floor(Math.random() * 100000);
+
+                    return { model, isValid: true };
+                },
                 onLineEditSubmit: async (model) => {
                     console.log(model);
-                    
-                    return true;
+
+                    return { model, isValid: true };
                 }
             },
-            options: {
-                addLineText: 'Přidat řádek +++'
-            }
         });
     </script>
 </body>
