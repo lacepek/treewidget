@@ -55,7 +55,7 @@ export class DropZone extends Container<{}>
 
   protected onDrop(event: Event, target: HTMLElement): void
   {
-    let draggable = this.current.component;
+    const draggable = this.current.component;
     this.element.insertBefore(draggable.element, target);
   }
 

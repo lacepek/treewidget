@@ -13,22 +13,20 @@ export class TreeSortZone extends SortZone
     }
 
     const dragged = this.current.component.element;
-
     // if dragged is target do nothing 
     if (dragged === target) {
       return;
     }
 
     const targetChild = this.findChildByElement(target);
-
     if (targetChild) {
-      let currentIndex = this.current.index;
-      let targetIndex = targetChild.index;
+      const currentIndex = this.current.index;
+      const targetIndex = targetChild.index;
 
       if (this.canMoveChild(targetChild)) {
         this.moveChild(currentIndex, targetIndex);
 
-        let positionChange = targetIndex - currentIndex;
+        const positionChange = targetIndex - currentIndex;
         this.current.component.onSortSuccess({ lastIndex: currentIndex, index: targetIndex, positionChange });
       }
     }
@@ -39,10 +37,10 @@ export class TreeSortZone extends SortZone
     if (!this.hasChildren()) {
       return;
     }
-    
+
     const children = this.current.component.parent.data.children;
 
-    let child = children[fromIndex];
+    const child = children[fromIndex];
 
     children.splice(fromIndex, 1);
     children.splice(toIndex, 0, child);
