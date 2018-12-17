@@ -6,6 +6,7 @@ import Select from './select';
 import Checkbox from './checkbox';
 import objectMapArray from '../utility/objectMapArray';
 import Radio from './radio';
+import objectFilter from '../utility/objectFilter';
 
 export class DynamicForm extends Component<{}>
 {
@@ -40,7 +41,9 @@ export class DynamicForm extends Component<{}>
 
   protected renderForm(): Array<Component<{}>>
   {
-    const attributes = this.model;
+    const attributes = objectFilter(this.model, (attribute: FormAttribute) => {
+      return !attribute.isHidden;
+    });
 
     const formContent = objectMapArray(attributes, (attribute: FormAttribute) =>
     {
@@ -82,9 +85,9 @@ export class DynamicForm extends Component<{}>
     const optionElements = objectMapArray(options, (option: FormAttributeOption) => 
     {
       const id = `option-${name}-${option.key}`;
-      return ElementUtility.createElement('option', option.value, { id });
+      const selected = value === option.key;
+      return ElementUtility.createElement('option', option.value, { id, value: option.key, selected });
     });
-
     const selectId = `select-${name}`;
     const selectElement = new Select({ formAttribute, label, attributes: { name, disabled, value, id: selectId } });
 
