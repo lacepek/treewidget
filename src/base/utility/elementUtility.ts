@@ -38,7 +38,7 @@ export class ElementUtility
       }
 
       if (element) {
-        element.setAttribute(name, value);
+        this.addAttribute(element, name, value);
       }
     }
   }
@@ -113,6 +113,17 @@ export class ElementUtility
       return content.element;
     } else {
       return content;
+    }
+  }
+
+  private static addAttribute(element: any, name: string, value: any)
+  {
+    switch (name) {
+      case 'selected':
+        element.selected = value;
+        break;
+      default:
+        element.setAttribute(name, value);
     }
   }
 
