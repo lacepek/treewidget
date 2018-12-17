@@ -1,16 +1,18 @@
 import { Draggable } from '../draggable';
 import { Container, ContainerChild } from './container';
+import { Component } from '../component';
 
 export class DropZone extends Container<{}>
 {
   public current: ContainerChild<{}>;
   public canDrop: boolean;
+  public root: Component<{}>;
 
   private hasRegisteredEvents: boolean = false;
 
   public setCurrent(draggable: Draggable): void
   {
-    let child = this.findChild(draggable);
+    const child = this.findChild(draggable);
 
     if (child) {
       this.current = child;
@@ -53,7 +55,7 @@ export class DropZone extends Container<{}>
 
   protected onDrop(event: Event, target: HTMLElement): void
   {
-    let draggable = this.current.component;
+    const draggable = this.current.component;
     this.element.insertBefore(draggable.element, target);
   }
 

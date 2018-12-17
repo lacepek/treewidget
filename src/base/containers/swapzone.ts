@@ -4,15 +4,15 @@ export default class SwapZone extends DropZone
 {
   public onDrop(event: Event, target: HTMLElement): void
   {
-    let dragged = this.current.component.element;
-    let nextSibling = target.nextElementSibling;
+    const dragged = this.current.component.element;
+    const nextSibling = target.nextElementSibling;
 
     if (nextSibling === dragged) {
       this.element.insertBefore(dragged, target);
     } else {
       this.element.insertBefore(target, dragged);
 
-      // if it's not last element insert before otherwise put it to the end of the container
+      // if it's not last element insert before, otherwise put it to the end of the container
       if (nextSibling) {
         this.element.insertBefore(dragged, nextSibling)
       } else {
@@ -25,14 +25,14 @@ export default class SwapZone extends DropZone
   {
     this.element.addEventListener('drop', (event: Event) =>
     {
-      let target = this.findTarget(event.target as HTMLElement);
+      const target = this.findTarget(event.target as HTMLElement);
       return this.onDrop(event, target);
     });
   }
 
   private findTarget(target: HTMLElement): HTMLElement
   {
-    if (!target.draggable) {
+    if (target && !target.hasAttribute('draggable')) {
       target = target.parentElement;
       this.findTarget(target);
     }

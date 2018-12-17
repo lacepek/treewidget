@@ -130,6 +130,7 @@
                 'label': 'otázka',
                 'addLineText': 'Přidat otázku',
                 'parent': 'kategorie',
+                'useModalEdit': true,
                 'isSortable': true,
                 'useModalEdit': true,
                 'canEdit': true,
@@ -181,7 +182,15 @@
                         ]
                     },
                     {
-                        'item': { 'nazev': 'Child 2', 'popis': 'Lorem ipsum dolor sit amet, consectetuer adipiscing elit.', 'pk': 'kategorie-2' },
+                        item: { nazev: 'Child 2', popis: 'Lorem ipsum dolor sit amet, consectetuer adipiscing elit.', pk: 'kategorie-2' },
+                        children: [
+                            {
+                                item: { nazev: 'Grandchild 5', druh: 'skala', dulezitost: 'ano', pk: 'otazka-1' },
+                            },
+                            {
+                                item: { nazev: 'Grandchild 6', druh: 'skala', dulezitost: 'ano', pk: 'otazka-2' },
+                            },
+                        ]
                     }
                 ],
             },

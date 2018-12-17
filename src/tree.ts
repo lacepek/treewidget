@@ -41,6 +41,7 @@ export class Tree extends Component<{ data: Array<DataNode> }>
 
   private modal: Modal;
   private wrapper: HTMLElement;
+  private structureKeys: string[];
 
   private addLineCallback: any;
 
@@ -55,7 +56,13 @@ export class Tree extends Component<{ data: Array<DataNode> }>
   {
     super.init();
 
-    this.state.data = this.data;
+    if (this.data) {
+      this.state.data = this.data;
+    }
+
+    if (this.structure) {
+      this.structureKeys = Object.keys(this.structure);
+    }
   }
 
   protected render(): void
@@ -64,13 +71,25 @@ export class Tree extends Component<{ data: Array<DataNode> }>
       this.parentElement = document.body;
     }
 
-    this.setAttribute('class', 'tree-widget-list');
+    const structureKey = this.structureKeys[0];
+    const canDrop = this.structure[structureKey].isSortable;
+    const rootSortZone = new TreeSortZone({
+      tag: 'div',
+      data: { item: null, children: this.state.data },
+      canDrop,
+      parentElement: this.parentElement,
+      attributes: { className: 'tree-widget-list' },
+    });
+
+    this.element = rootSortZone.element;
 
     this.wrapper = this.createElement('div', this.element, { className: 'tree-widget' });
 
+    this.parentElement.appendChild(this.wrapper);
+
     let level = 0;
     let iterator = { count: 0 };
-    this.createLines(this.state.data, level, iterator, this.element, null, null, null, null);
+    this.createLines(this.state.data, level, iterator, this.element, rootSortZone, null, null, null);
 
     this.modal = new Modal({
       parentElement: this.element, title: { size: 3, text: 'Header' },
@@ -114,7 +133,7 @@ export class Tree extends Component<{ data: Array<DataNode> }>
     
     const nextStructureKey = structureKeys[level + 1];
     const nextStructure = this.structure[nextStructureKey];
-    console.log({ data, keys });
+    
     for (let i = 0, n = keys.length; i <= n; i++) {      
       if (this.canEdit && i === n) {
         iterator.count++;
@@ -130,6 +149,11 @@ export class Tree extends Component<{ data: Array<DataNode> }>
       }
 
       const line = this.createLine(level, iterator.count, parent, dataNode, structure, sortZone);
+
+      const isSortable = this.canEdit && structure.canEdit && structure.isSortable;
+      if (isSortable) {
+        line.onSortSuccess = () => { this.setState({ data: this.state.data }) };
+      }
 
       if (this.canEdit && sortZone) {
         sortZone.addChild(line);

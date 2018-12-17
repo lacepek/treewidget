@@ -6,14 +6,14 @@ export class Container<T> extends Component<T>
 
   public addChild(child: Component<T>): void
   {
-    let size = this.children.length;
+    const size = this.children.length;
     this.children.push({ index: size, component: child });
     child.parent = this;
   }
 
   public findChildByElement(element: HTMLElement): ContainerChild<T>
   {
-    for (let child of this.children) {
+    for (const child of this.children) {
       if (child.component.element === element) {
         return child;
       }
@@ -24,7 +24,7 @@ export class Container<T> extends Component<T>
 
   public findChild(component: Component<T>)
   {
-    for (let child of this.children) {
+    for (const child of this.children) {
       if (child.component === component) {
         return child;
       }
@@ -35,7 +35,7 @@ export class Container<T> extends Component<T>
 
   public moveChild(fromIndex: number, toIndex: number): void
   {
-    let child = this.children[fromIndex];
+    const child = this.children[fromIndex];
 
     this.children.splice(fromIndex, 1);
     this.children.splice(toIndex, 0, child);
@@ -43,14 +43,14 @@ export class Container<T> extends Component<T>
     this.resetIndexes();
   }
 
-  protected resetIndexes()
+  protected resetIndexes(): void
   {
     for (let i = 0, n = this.children.length; i < n; i++) {
       this.children[i].index = i;
     }
   }
 
-  protected setDefaultProps()
+  protected setDefaultProps(): void
   {
     super.setDefaultProps();
 
