@@ -43,14 +43,14 @@ export class Container<T> extends Component<T>
     this.resetIndexes();
   }
 
-  protected resetIndexes()
+  protected resetIndexes(): void
   {
     for (let i = 0, n = this.children.length; i < n; i++) {
       this.children[i].index = i;
     }
   }
 
-  protected setDefaultProps()
+  protected setDefaultProps(): void
   {
     super.setDefaultProps();
 

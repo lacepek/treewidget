@@ -5,25 +5,28 @@ export default class SortZone extends SwapZone
 {
   public onDrop(event: Event, target: HTMLElement): void
   {
-    console.log(target);
-    let dragged = this.current.component.element;
+    if (!this.current) {
+      return;
+    }
+    
+    const dragged = this.current.component.element;
 
     // if dragged is target do nothing 
     if (dragged === target) {
       return;
     }
 
-    let targetChild = this.findChildByElement(target);
+    const targetChild = this.findChildByElement(target);
 
     if (targetChild) {
-      let currentIndex = this.current.index;
-      let targetIndex = targetChild.index;
+      const currentIndex = this.current.index;
+      const targetIndex = targetChild.index;
 
       // if current is higher then the target put it after, otherwise put it before the target
       if (currentIndex > targetIndex) {
         this.element.insertBefore(dragged, target)
       } else {
-        let nextSibling = target.nextElementSibling;
+        const nextSibling = target.nextElementSibling;
         if (nextSibling) {
           this.element.insertBefore(dragged, nextSibling)
         } else {
@@ -36,7 +39,7 @@ export default class SortZone extends SwapZone
 
       // if dragged is also sortable, dispatch onSortSuccess event
       if (this.current.component instanceof Sortable) {
-        let positionChange = targetIndex - currentIndex;
+        const positionChange = targetIndex - currentIndex;
         this.current.component.onSortSuccess({ lastIndex: currentIndex, index: targetIndex, positionChange });
       }
     }

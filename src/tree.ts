@@ -40,6 +40,7 @@ export class Tree extends Component<{ data: Array<DataNode> }>
 
   private modal: Modal;
   private wrapper: HTMLElement;
+  private structureKeys: string[];
 
   public clearContent(): void
   {
@@ -52,7 +53,13 @@ export class Tree extends Component<{ data: Array<DataNode> }>
   {
     super.init();
 
-    this.state.data = this.data;
+    if (this.data) {
+      this.state.data = this.data;
+    }
+
+    if (this.structure) {
+      this.structureKeys = Object.keys(this.structure);
+    }
   }
 
   protected render(): void
@@ -61,22 +68,29 @@ export class Tree extends Component<{ data: Array<DataNode> }>
       this.parentElement = document.body;
     }
 
-    this.setAttribute('class', 'tree-widget-list');
+    const structureKey = this.structureKeys[0];
+    const canDrop = this.structure[structureKey].isSortable;
+    const rootSortZone = new TreeSortZone({
+      tag: 'div',
+      data: { item: null, children: this.state.data },
+      canDrop,
+      parentElement: this.parentElement,
+      attributes: { className: 'tree-widget-list' },
+    });
+
+    this.element = rootSortZone.element;
 
     this.wrapper = this.createElement('div', this.element, { className: 'tree-widget' });
 
+    this.parentElement.appendChild(this.wrapper);
+
     let level = 0;
     let iterator = { count: 0 };
-    this.createLines(this.state.data, level, iterator, this.element, null);
+    this.createLines(this.state.data, level, iterator, this.element, rootSortZone);
 
     this.modal = new Modal({
       parentElement: this.element, title: { size: 3, text: 'Header' },
     });
-  }
-
-  protected postRender(): void
-  {
-    this.parentElement.appendChild(this.wrapper);
   }
 
   protected setDefaultProps(): void
@@ -108,6 +122,10 @@ export class Tree extends Component<{ data: Array<DataNode> }>
       let isSortable = this.canEdit && structure.isSortable;
       let line = this.createLine(level, iterator.count, isSortable, parent, dataNode, structure, {}, sortZone);
 
+      if (isSortable) {
+        line.onSortSuccess = () => { this.setState({ data: this.state.data }) };
+      }
+
       if (this.canEdit && sortZone) {
         sortZone.addChild(line);
       }
@@ -128,9 +146,9 @@ export class Tree extends Component<{ data: Array<DataNode> }>
         const nextStructure = this.structure[nextStructureKey];
 
         const canDrop = this.canEdit && nextStructure.isSortable;
-        sortZone = new TreeSortZone({ tag: 'div', data: dataNode, canDrop, parentElement: parent });
+        const newSortZone = new TreeSortZone({ tag: 'div', data: dataNode, canDrop, parentElement: parent });
 
-        container = sortZone.element;
+        container = newSortZone.element;
         container.setAttribute('class', structure.name);
 
         parent.appendChild(container);
@@ -140,7 +158,7 @@ export class Tree extends Component<{ data: Array<DataNode> }>
           level + 1,
           iterator,
           container,
-          sortZone
+          newSortZone
         );
       }
     }
@@ -157,11 +175,6 @@ export class Tree extends Component<{ data: Array<DataNode> }>
 
     parent.insertBefore(newElement, element);
   }
-
-  /*protected editDone(): TreeLine
-  {
-      
-  }*/
 
   protected createAddLine(
     level: number,
@@ -190,7 +203,7 @@ export class Tree extends Component<{ data: Array<DataNode> }>
 
   protected addLine(containerData: DataNode, structure: Structure): void
   {
-    if (structure.useFormEdit) {
+    if (structure.useModalEdit) {
       const rawModel = structure.items;
       let modelItems = objectFilter(rawModel, (item: StructureItem) =>
       {
@@ -312,11 +325,18 @@ export interface Structure
   parent: string | null;
 
   /**
-   * Can th childs be sorted
+   * Can children be sorted
    */
   isSortable?: boolean;
-  useFormEdit?: boolean;
-  options?: { class?: string };
+  
+  /**
+   * Should modal be used for editing
+   */
+  useModalEdit?: boolean;
+
+  /**
+   * 
+   */
   items?: { [name: string]: StructureItem };
 }
 

@@ -102,6 +102,7 @@
             'oblast': {
                 'name': 'oblast',
                 'parent': null,
+                'isSortable': true,
                 'items': {
                     'pk': { type: 'text', hidden: true },
                     'nazev': { type: 'text', label: 'Nazev' },
@@ -111,6 +112,7 @@
             'kategorie': {
                 'name': 'kategorie',
                 'parent': 'oblast',
+                'isSortable': true,
                 'items': {
                     'pk': { type: 'text', hidden: true },
                     'nazev': { type: 'text', label: 'Nazev' },
@@ -120,8 +122,8 @@
             'otazka': {
                 'name': 'otazka',
                 'parent': 'kategorie',
-                'isSortable': true,
                 'useFormEdit': true,
+                'isSortable': true,
                 'items': {
                     'pk': { type: 'text', hidden: true },
                     'nazev': { name: 'skala', type: 'text', label: 'Otázka' },
@@ -171,6 +173,14 @@
                     },
                     {
                         item: { nazev: 'Child 2', popis: 'Lorem ipsum dolor sit amet, consectetuer adipiscing elit.', pk: 'kategorie-2' },
+                        children: [
+                            {
+                                item: { nazev: 'Grandchild 5', druh: 'skala', dulezitost: 'ano', pk: 'otazka-1' },
+                            },
+                            {
+                                item: { nazev: 'Grandchild 6', druh: 'skala', dulezitost: 'ano', pk: 'otazka-2' },
+                            },
+                        ]
                     }
                 ],
             },
