@@ -2,13 +2,18 @@ const path = require('path');
 
 module.exports = {
     mode: 'development',
-    entry: './src/index.ts',
+    entry: ['./src/index.ts'],
     devtool: 'eval-source-map',
     module: {
         rules: [
             {
                 test: /\.tsc?$/,
                 use: 'ts-loader',
+                exclude: '/node_modules/'
+            },
+            {
+                test: /\.css$/,
+                use: ['style-loader', 'css-loader'],
                 exclude: '/node_modules/'
             }
         ]

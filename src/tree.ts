@@ -1,12 +1,10 @@
 import { Component } from './base/component';
 import { TreeLine, LineData, OnLineMoveData } from './treeLine';
 import { Modal } from './base/modal';
-import objectFilter from './base/utility/objectFilter';
 import { TreeForm } from './treeForm';
 import { FormModel, FormAttribute } from './base/forms/interfaces/formModel';
 import objectMap from './base/utility/objectMap';
 import { TreeSortZone } from './treeSortZone';
-import SortZone from './base/containers/sortzone';
 
 /**
  * Main component of TreeWidget, renders tree-like structure from data with options to edit, add and rearrange lines,
@@ -35,15 +33,13 @@ export class Tree extends Component<{ data: Array<DataNode> }>
   public events: TreeEvents;
 
   /**
-   * Other options
+   * Other widget options
    */
   public options: TreeConfig;
 
   private modal: Modal;
   private wrapper: HTMLElement;
   private structureKeys: string[];
-
-  private addLineCallback: any;
 
   public clearContent(): void
   {
@@ -89,7 +85,7 @@ export class Tree extends Component<{ data: Array<DataNode> }>
 
     let level = 0;
     let iterator = { count: 0 };
-    this.createLines(this.state.data, level, iterator, this.element, rootSortZone, null, null, null);
+    this.createLines(this.state.data, level, iterator, this.element, rootSortZone);
 
     this.modal = new Modal({
       parentElement: this.element, title: { size: 3, text: 'Header' },
@@ -118,32 +114,34 @@ export class Tree extends Component<{ data: Array<DataNode> }>
     iterator: { count: number },
     parent: HTMLElement,
     sortZone: TreeSortZone,
-    beforeParent: HTMLElement,
-    beforeSortZone: TreeSortZone,
-    beforeDataNode: DataNode
   ): void
   {
-    const dataCount = data.length;
-    let currentCount = 0;
     const keys = Object.keys(data);
-    
+
     const structureKeys = Object.keys(this.structure);
     const structureKey = structureKeys[level];
     const structure = this.structure[structureKey];
-    
+
     const nextStructureKey = structureKeys[level + 1];
     const nextStructure = this.structure[nextStructureKey];
-    
-    for (let i = 0, n = keys.length; i <= n; i++) {      
-      if (this.canEdit && i === n) {
+
+    for (let i = 0, n = keys.length; i <= n; i++) {
+      if (structure.canEdit === undefined) {
+        structure.canEdit = this.canEdit;
+      }
+
+      // create add line in edit mode at the end of level      
+      if (this.canEdit && structure.canEdit && i === n) {
         iterator.count++;
         this.createAddLine(level, iterator.count, parent, structure, sortZone);
         break;
+      } else if (i === n) {
+        break;
       }
+      iterator.count++;
 
       const key = keys[i];
       const dataNode = data[key as any];
-
       if (!dataNode.children) {
         dataNode.children = [];
       }
@@ -159,54 +157,21 @@ export class Tree extends Component<{ data: Array<DataNode> }>
         sortZone.addChild(line);
       }
 
-      // create add line in edit mode at the end of level
-      currentCount++;
-      const isLastData = dataCount === currentCount;
-      /*if (this.canEdit && isLastData) {
-        iterator.count++;
-        this.createAddLine(level, iterator.count, parent, structure, sortZone);
-      }*/
+      const canDrop = this.canEdit && nextStructure && nextStructure.isSortable;
+      const newSortZone = new TreeSortZone({ tag: 'div', data: dataNode, canDrop, parentElement: parent });
 
-      iterator.count++;
-      let container = this.element;
-      let newSortZone = null;
-      // if element have children create wrapper for them
-      if (dataNode.children) {
-        // if child structure level is sortable create dropzone
-        const canDrop = this.canEdit && nextStructure && nextStructure.isSortable;
-        newSortZone = new TreeSortZone({ tag: 'div', data: dataNode, canDrop, parentElement: parent });
+      const container = newSortZone.element;
+      container.setAttribute('class', structure.name);
+      parent.appendChild(container);
 
-        container = newSortZone.element;
-        container.setAttribute('class', structure.name);
-
-        parent.appendChild(container);
-      }
-
-      // Add button after container
-      /*if (this.canEdit && isLastData) {
-        const beforeStructureKey = structureKeys[level - 1];
-        const beforeStructure = this.structure[beforeStructureKey];
-        
-        iterator.count++;
-        if (beforeStructure) {
-          this.createAddLine(level - 1, iterator.count, beforeParent, beforeDataNode, beforeStructure, beforeSortZone);
-        }
-      }*/
-
-      beforeParent = parent;
-      beforeSortZone = newSortZone;
-      beforeDataNode = dataNode;
-
+      // create lines on next level
       if (level < structureKeys.length - 1) {
         this.createLines(
           dataNode.children ? dataNode.children : [],
           level + 1,
           iterator,
           container,
-          newSortZone,
-          beforeParent,
-          beforeSortZone,
-          beforeDataNode
+          newSortZone
         );
       }
     }
@@ -323,25 +288,23 @@ export class Tree extends Component<{ data: Array<DataNode> }>
   }
 }
 
-export interface TreeNode
-{
-  node: Component<{}>;
-  parent: Component<{}>;
-  children?: Array<TreeNode>;
-}
-
 export interface TreeEvents
 {
   onLineClick?: (data: LineData, item: HTMLElement) => void;
   onLineMove?: (data: OnLineMoveData, item: HTMLElement) => void;
+
+  /**
+   * Fires when new line was submited
+   */
   onLineAddSubmit?: (model: FormModel) => { model: FormModel, isValid: boolean }
+
+  /**
+   * Fires when line edit was submited
+   */
   onLineEditSubmit?: (model: FormModel) => { model: FormModel, isValid: boolean }
 }
 
-export interface TreeConfig
-{
-
-}
+export interface TreeConfig { }
 
 export interface DataNode
 {
@@ -381,8 +344,20 @@ export interface Structure
    * Show modal for line editing
    */
   useModalEdit?: boolean;
+
+  /**
+   * Can this level be edited
+   */
   canEdit?: boolean;
-  options?: { class?: string };
+
+  /**
+   * Other level options
+   */
+  options?: {};
+
+  /**
+   * Structure of items displayed
+   */
   items?: { [name: string]: StructureItem };
 }
 
