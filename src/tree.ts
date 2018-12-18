@@ -115,15 +115,19 @@ export class Tree extends Component<{ data: Array<DataNode> }>
     parent: HTMLElement,
     sortZone: TreeSortZone,
   ): void
-  {
-    const keys = Object.keys(data);
-
+  {  
     const structureKeys = Object.keys(this.structure);
     const structureKey = structureKeys[level];
     const structure = this.structure[structureKey];
 
     const nextStructureKey = structureKeys[level + 1];
     const nextStructure = this.structure[nextStructureKey];
+
+    if (structure.options && structure.options.sortFunction) {
+      data.sort(structure.options.sortFunction);
+    }
+
+    const keys = Object.keys(data);
 
     for (let i = 0, n = keys.length; i <= n; i++) {
       if (structure.canEdit === undefined) {
@@ -353,7 +357,7 @@ export interface Structure
   /**
    * Other level options
    */
-  options?: {};
+  options?: { sortFunction?: (itemA: any, itemB: any) => number };
 
   /**
    * Structure of items displayed
