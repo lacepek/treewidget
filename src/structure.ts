@@ -74,6 +74,11 @@ export class Structure
   {
     return this.getConfig().isSortable;
   }
+
+  public getSortFunction(): (itemA: any, itemB: any) => number
+  {
+    return this.getConfig().sortFunction;
+  }
 }
 
 export interface StructureType
@@ -129,4 +134,9 @@ export type StructureConfig = {
    * Can lines on this level be manually sorted
    */
   isSortable?: boolean;
+
+  /**
+   * Custom sorting function, sorts once when the tree is initialized 
+   */
+  sortFunction?: (itemA: any, itemB: any) => number;
 }

@@ -130,13 +130,19 @@ export class Tree extends Component<{ data: Array<DataNode> }>
     sortZone: TreeSortZone,
   ): void
   {
-    const keys = Object.keys(data);
-
     const structureKey = this.structureKeys[level];
     const structure = this._structure[structureKey];
 
     const nextStructureKey = this.structureKeys[level + 1];
     const nextStructure = this._structure[nextStructureKey];
+
+    const sortFunction = structure.getSortFunction();
+    if (sortFunction && !structure.hasBeenSorted) {
+      data.sort(sortFunction);
+      structure.hasBeenSorted = true;
+    }
+
+    const keys = Object.keys(data);
 
     for (let i = 0, n = keys.length; i <= n; i++) {
       // create add line in edit mode at the end of level      
