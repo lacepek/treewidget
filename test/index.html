@@ -18,9 +18,11 @@
             'oblast': {
                 'name': 'oblast',
                 'label': 'oblast',
-                'addLineText': 'Přidat oblast',
                 'parent': null,
-                'useModalEdit': true,
+                'config': {
+                    'useModalEdit': true,
+                    'addLineText': 'Přidat oblast',
+                },
                 'items': {
                     'pk': { 'type': 'text', 'isHidden': true },
                     'nazev': { 'type': 'text', 'label': 'Nazev' },
@@ -30,9 +32,11 @@
             'kategorie': {
                 'name': 'kategorie',
                 'label': 'kategorie',
-                'addLineText': 'Přidat kategorii',
                 'parent': 'oblast',
-                'useModalEdit': true,
+                'config': {
+                    'addLineText': 'Přidat kategorii',
+                    'useModalEdit': true,
+                },
                 'items': {
                     'pk': { 'type': 'text', 'isHidden': true },
                     'nazev': { 'type': 'text', 'label': 'Nazev' },
@@ -42,11 +46,14 @@
             'otazka': {
                 'name': 'otazka',
                 'label': 'otázka',
-                'addLineText': 'Přidat otázku',
                 'parent': 'kategorie',
-                'useModalEdit': true,
-                'isSortable': true,
-                'useModalEdit': true,
+                'config': {
+                    'addLineText': 'Přidat otázku',
+                    'useModalEdit': true,
+                    'isSortable': true,
+                    'canEdit': false,
+                    'canAdd': true
+                },
                 'items': {
                     'pk': { 'type': 'text', 'isHidden': true },
                     'nazev': { 'name': 'nazev', 'type': 'text', 'label': 'Otázka' },
@@ -116,7 +123,10 @@
             parentSelector: '#tree-widget-wrapper',
             data: data,
             structure: structure,
-            canEdit: false,
+            config: {
+                canEdit: true,
+                canAdd: false,
+            },
             events: {
                 onLineClick: (data, item) => { /*console.log(data); console.log(item)*/ },
                 onLineMove: (data, item) => { /*console.log(data); console.log(item)*/ },

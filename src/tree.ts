@@ -5,6 +5,7 @@ import { TreeForm } from './treeForm';
 import { FormModel, FormAttribute } from './base/forms/interfaces/formModel';
 import objectMap from './base/utility/objectMap';
 import { TreeSortZone } from './treeSortZone';
+import { Structure, StructureType } from './structure';
 
 /**
  * Main component of TreeWidget, renders tree-like structure from data with options to edit, add and rearrange lines,
@@ -20,12 +21,7 @@ export class Tree extends Component<{ data: Array<DataNode> }>
   /**
    * Settings for how the data should be structured
    */
-  public structure: { [name: string]: Structure };
-
-  /**
-   * Should the tree be editable
-   */
-  public canEdit: boolean;
+  public structure: { [name: string]: StructureType };
 
   /**
    * Event callback hooks
@@ -33,13 +29,24 @@ export class Tree extends Component<{ data: Array<DataNode> }>
   public events: TreeEvents;
 
   /**
-   * Other widget options
+   * Other widget configuration
    */
-  public options: TreeConfig;
+  public config: TreeConfig;
 
   private modal: Modal;
   private wrapper: HTMLElement;
   private structureKeys: string[];
+  private _structure: { [name: string]: Structure };
+
+  public canEdit(): boolean
+  {
+    return this.config.canEdit;
+  }
+
+  public canAdd(): boolean
+  {
+    return this.config.canAdd;
+  }
 
   public clearContent(): void
   {
@@ -56,8 +63,23 @@ export class Tree extends Component<{ data: Array<DataNode> }>
       this.state.data = this.data;
     }
 
-    if (this.structure) {
-      this.structureKeys = Object.keys(this.structure);
+    this._structure = objectMap(this.structure, (structure: StructureType) =>
+    {
+      const newStructure = new Structure(structure);
+
+      if (newStructure.canEdit() === undefined) {
+        newStructure.setCanEdit(this.canEdit());
+      }
+
+      if (newStructure.canAdd() === undefined) {
+        newStructure.setCanAdd(this.canAdd());
+      }
+
+      return newStructure;
+    });
+
+    if (this._structure) {
+      this.structureKeys = Object.keys(this._structure);
     }
   }
 
@@ -67,15 +89,7 @@ export class Tree extends Component<{ data: Array<DataNode> }>
       this.parentElement = document.body;
     }
 
-    const structureKey = this.structureKeys[0];
-    const canDrop = this.structure[structureKey].isSortable;
-    const rootSortZone = new TreeSortZone({
-      tag: 'div',
-      data: { item: null, children: this.state.data },
-      canDrop,
-      parentElement: this.parentElement,
-      attributes: { className: 'tree-widget-list' },
-    });
+    const rootSortZone = this.createRootSortZone(); 
 
     this.element = rootSortZone.element;
 
@@ -94,18 +108,18 @@ export class Tree extends Component<{ data: Array<DataNode> }>
     this.parentElement.appendChild(this.wrapper);
   }
 
-  protected setDefaultProps(): void
+  protected createRootSortZone(): TreeSortZone
   {
-    super.setDefaultProps();
-
-    this.data = [];
-    this.structure = {};
-    this.canEdit = false;
-    this.options = { addLineText: null };
-
-    this.events = {};
-    this.events.onLineAddSubmit = (model: FormModel) => { return { model, isValid: true } };
-    this.events.onLineEditSubmit = (model: FormModel) => { return { model, isValid: true } }
+    const structureKey = this.structureKeys[0];
+    const structure = this._structure[structureKey];
+    const canDrop = structure.canEdit() && structure.isSortable();
+    return new TreeSortZone({
+      tag: 'div',
+      data: { item: null, children: this.state.data },
+      canDrop,
+      parentElement: this.parentElement,
+      attributes: { className: 'tree-widget-list' },
+    });
   }
 
   protected createLines(
@@ -118,20 +132,15 @@ export class Tree extends Component<{ data: Array<DataNode> }>
   {
     const keys = Object.keys(data);
 
-    const structureKeys = Object.keys(this.structure);
-    const structureKey = structureKeys[level];
-    const structure = this.structure[structureKey];
+    const structureKey = this.structureKeys[level];
+    const structure = this._structure[structureKey];
 
-    const nextStructureKey = structureKeys[level + 1];
-    const nextStructure = this.structure[nextStructureKey];
+    const nextStructureKey = this.structureKeys[level + 1];
+    const nextStructure = this._structure[nextStructureKey];
 
     for (let i = 0, n = keys.length; i <= n; i++) {
-      if (structure.canEdit === undefined) {
-        structure.canEdit = this.canEdit;
-      }
-
       // create add line in edit mode at the end of level      
-      if (this.canEdit && structure.canEdit && i === n) {
+      if (structure.canAdd() && i === n) {
         iterator.count++;
         this.createAddLine(level, iterator.count, parent, structure, sortZone);
         break;
@@ -148,12 +157,13 @@ export class Tree extends Component<{ data: Array<DataNode> }>
 
       const line = this.createLine(level, iterator.count, parent, dataNode, structure, sortZone);
 
-      const isSortable = this.canEdit && structure.canEdit && structure.isSortable;
+      const canEdit = structure.canEdit();
+      const isSortable = canEdit && structure.isSortable();
       if (isSortable) {
         line.onSortSuccess = () => { this.setState({ data: this.state.data }) };
       }
 
-      if (this.canEdit && sortZone) {
+      if (canEdit && sortZone) {
         sortZone.addChild(line);
       }
 
@@ -161,11 +171,11 @@ export class Tree extends Component<{ data: Array<DataNode> }>
       const newSortZone = new TreeSortZone({ tag: 'div', data: dataNode, canDrop, parentElement: parent });
 
       const container = newSortZone.element;
-      container.setAttribute('class', structure.name);
+      container.setAttribute('class', structure.getName());
       parent.appendChild(container);
 
       // create lines on next level
-      if (level < structureKeys.length - 1) {
+      if (level < this.structureKeys.length - 1) {
         this.createLines(
           dataNode.children ? dataNode.children : [],
           level + 1,
@@ -186,13 +196,13 @@ export class Tree extends Component<{ data: Array<DataNode> }>
     sortZone: TreeSortZone
   ): TreeLine
   {
-    const canDrag = this.canEdit && structure.canEdit && structure.isSortable;
-    const container = sortZone, events = this.events;
-    const lineOptions = { parentElement, data, structure, level, canDrag, events, container, count }
+    const canEdit = this.canEdit() && structure.canEdit()
+    const canDrag = canEdit && structure.isSortable();
+    const container = sortZone;
+    const lineOptions = { parentElement, data, structure, level, canDrag, events: this.events, container, count }
 
     const line = new TreeLine(lineOptions);
-
-    if (this.canEdit && structure.canEdit) {
+    if (canEdit) {
       line.element.onclick = () =>
       {
         this.onEditLine(data, structure, true);
@@ -210,14 +220,17 @@ export class Tree extends Component<{ data: Array<DataNode> }>
     sortZone: TreeSortZone
   ): TreeLine
   {
-    const text = structure.addLineText ? structure.addLineText : 'Add line +';
-    const line = new TreeLine({ parentElement, structure, level, count, text });
+    const addLineText = structure.getAddLineText();
+    const text = addLineText ? addLineText : 'Add line +';
 
-    line.element.addEventListener('click', () =>
-    {
-      const containerData = sortZone ? sortZone.data : this.data;
-      this.onEditLine(containerData, structure, false);
-    });
+    const line = new TreeLine({ parentElement, structure, level, count, text });
+    if (this.canAdd() && structure.canAdd()) {
+      line.element.addEventListener('click', () =>
+      {
+        const containerData = sortZone ? sortZone.data : this.data;
+        this.onEditLine(containerData, structure, false);
+      });
+    }
 
     return line;
   }
@@ -225,9 +238,9 @@ export class Tree extends Component<{ data: Array<DataNode> }>
   protected onEditLine(data: DataNode, structure: Structure, isEditing: boolean): void
   {
     if (structure.useModalEdit) {
-      let model = structure.items;
+      let model = structure.getItems();
 
-      model = objectMap(model, (item: StructureItem) =>
+      model = objectMap(model, (item: FormAttribute) =>
       {
         if (isEditing) {
           const key = item.name;
@@ -286,10 +299,24 @@ export class Tree extends Component<{ data: Array<DataNode> }>
       this.setState({ data: this.state.data });
     }
   }
+
+  protected setDefaultProps(): void
+  {
+    super.setDefaultProps();
+
+    this.data = [];
+    this.structure = {};
+    this.config = {};
+
+    this.events = {};
+    this.events.onLineClick = () => { };
+    this.events.onLineMove = () => { };
+    this.events.onLineAddSubmit = (model: FormModel) => { return { model, isValid: true } };
+    this.events.onLineEditSubmit = (model: FormModel) => { return { model, isValid: true } }
+  }
 }
 
-export interface TreeEvents
-{
+export type TreeEvents = {
   onLineClick?: (data: LineData, item: HTMLElement) => void;
   onLineMove?: (data: OnLineMoveData, item: HTMLElement) => void;
 
@@ -304,64 +331,20 @@ export interface TreeEvents
   onLineEditSubmit?: (model: FormModel) => { model: FormModel, isValid: boolean }
 }
 
-export interface TreeConfig { }
-
-export interface DataNode
-{
-  [key: string]: any;
-  item: { [name: string]: string };
-  children?: Array<DataNode>;
-}
-
-export interface Structure
-{
+export type TreeConfig = {
   /**
-   * Name of tree branch
-   */
-  name: string;
-
-  /**
-   * Parent tree branch
-   */
-  parent: string | null;
-
-  /**
-   * Can lines on this level be sorted
-   */
-  isSortable?: boolean;
-
-  /**
-   * Visible name of tree branch
-   */
-  label?: string;
-
-  /**
-   * Text of add line
-   */
-  addLineText?: string;
-
-  /**
-   * Show modal for line editing
-   */
-  useModalEdit?: boolean;
-
-  /**
-   * Can this level be edited
+   * Can edit lines
    */
   canEdit?: boolean;
 
   /**
-   * Other level options
+   * Can add lines
    */
-  options?: {};
-
-  /**
-   * Structure of items displayed
-   */
-  items?: { [name: string]: StructureItem };
+  canAdd?: boolean;
 }
 
-export interface StructureItem extends FormAttribute
-{
-  defaultValue?: string;
+export type DataNode = {
+  [key: string]: any;
+  item: { [name: string]: string };
+  children?: Array<DataNode>;
 }

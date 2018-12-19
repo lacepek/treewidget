@@ -11,7 +11,8 @@ export interface FormAttribute
   label?: string;
   disabled?: boolean;
   isHidden?: boolean;
-  options?: { [name: string]: FormAttributeOption }
+  options?: { [name: string]: FormAttributeOption };
+  defaultValue?: any;
 }
 
 export interface FormAttributeOption

@@ -88,7 +88,7 @@ export class Component<T> extends Configurable
 
   protected init(): void
   {
-    this.config(this._config);
+    this.configurate(this._config);
 
     this.parentElement = this.getParentElement();
   }
