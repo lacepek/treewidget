@@ -68,8 +68,8 @@ export class Tree extends Component<{ data: Array<DataNode> }>
       this.state.data = this.data;
     }
 
-    this._structure = objectMap(this.structure, (structure: StructureType) =>
-    {
+    for (const key in this.structure) {
+      const structure = this.structure[key];
       const newStructure = new Structure(structure);
 
       if (newStructure.canEdit() === undefined) {
@@ -80,8 +80,8 @@ export class Tree extends Component<{ data: Array<DataNode> }>
         newStructure.setCanAdd(this.canAdd());
       }
 
-      return newStructure;
-    });
+      this._structure[key] = newStructure;
+    }
 
     if (this._structure) {
       this.structureKeys = Object.keys(this._structure);
