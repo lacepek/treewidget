@@ -3,10 +3,23 @@
 }
 
 .tree-line-odd {
-  background-color: rgb(234, 234, 241);
+  background-color: rgb(240, 240, 248);
+}
+
+.tree-widget-list > .tree-line:first-child {
+  border-top: 1px solid rgb(220, 220, 220);
 }
 
 .tree-line {
   padding-top: 0.5em;
   padding-bottom: 0.5em;
+  border-bottom: 1px solid rgb(220, 220, 220);
+}
+
+.tree-line-add:hover {
+  cursor: pointer;
+}
+
+.tree-line-edit:hover {
+  cursor: pointer;
 }

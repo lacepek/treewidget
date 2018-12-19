@@ -9,7 +9,7 @@
 </head>
 
 <body>
-    <div id="tree-widget-wrapper" class="container"></div>
+    <div id="tree-widget-wrapper" class="container p-3"></div>
 
     <script src="../dist/treewidget.js"></script>
 
@@ -24,9 +24,9 @@
                     'addLineText': 'Přidat oblast',
                 },
                 'items': {
-                    'tdotconsek_pk': { 'type': 'text', 'isHidden': true },
-                    'tdotconsek_nazev': { 'type': 'text', 'label': 'tdotconsek_nazev' },
-                    'tdotconsek_popis': { 'type': 'text', 'label': 'Popis' }
+                    'pk': { 'type': 'text', 'isHidden': true },
+                    'nazev': { 'type': 'text', 'label': 'tdotconsek_nazev' },
+                    'popis': { 'type': 'text', 'label': 'Popis' }
                 }
             },
             'kategorie': {
@@ -38,19 +38,20 @@
                     'useModalEdit': true,
                 },
                 'items': {
-                    'tdotconpsk_pk': { 'type': 'text', 'isHidden': true },
-                    'tdotconpsk_nazev': { 'type': 'text', 'label': 'Nazev' },
-                    'tdotconpsk_popis': { 'type': 'text', 'label': 'Popis' }
+                    'pk': { 'type': 'text', 'isHidden': true },
+                    'nazev': { 'type': 'text', 'label': 'Nazev' },
+                    'popis': { 'type': 'text', 'label': 'Popis' }
                 }
             },
             'otazka': {
                 'name': 'otazka',
                 'label': 'otázka',
                 'parent': 'kategorie',
-                'useModalEdit': true,
                 'config': {
-                    'isSortable': true,
+                    'addLineText': 'Přidat otázku',
                     'useModalEdit': true,
+                    'isSortable': true,
+                    'canEdit': true,
                     'sortFunction': (itemA, itemB) => {
                         if (itemA.item.druh && itemA.item.druh === 'text')
                         {
@@ -97,9 +98,9 @@
                 'children': [
                     {
                         'item': {
-                            'tdotconpsk_nazev': 'Child 1',
-                            'tdotconpsk_popis': 'Lorem ipsum dolor sit amet, consectetuer adipiscing elit.',
-                            'tdotconpsk_pk': 18
+                            'nazev': 'Child 1',
+                            'popis': 'Lorem ipsum dolor sit amet, consectetuer adipiscing elit.',
+                            'pk': 18
                         },
                         'children': [
                             {
@@ -121,9 +122,9 @@
                     },
                     {
                         'item': {
-                            'tdotconpsk_nazev': 'Child 2',
-                            'tdotconpsk_popis': 'Lorem ipsum dolor sit amet, consectetuer adipiscing elit.',
-                            'tdotconpsk_pk': 45
+                            'nazev': 'Child 2',
+                            'popis': 'Lorem ipsum dolor sit amet, consectetuer adipiscing elit.',
+                            'pk': 45
                         },
                         children: [
                             {
@@ -138,9 +139,9 @@
             },
             {
                 'item': {
-                    'tdotconsek_nazev': 'Parent 2',
-                    'tdotconsek_popis': 'Lorem ipsum dolor sit amet, consectetuer adipiscing elit.',
-                    'tdotconsek_pk': 15
+                    'nazev': 'Parent 2',
+                    'popis': 'Lorem ipsum dolor sit amet, consectetuer adipiscing elit.',
+                    'pk': 15
                 },
             }
         ];
@@ -151,7 +152,7 @@
             structure: structure,
             config: {
                 canEdit: true,
-                canAdd: false,
+                canAdd: true,
             },
             events: {
                 onLineClick: (data, item) => { /*console.log(data); console.log(item)*/ },
