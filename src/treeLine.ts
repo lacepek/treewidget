@@ -1,7 +1,8 @@
-import { TreeEvents, DataNode, Structure, StructureItem } from './tree';
+import { TreeEvents, DataNode} from './tree';
 import { Sortable, OnSortSuccessData } from './base/sortable';
 import { ElementUtility } from './base/utility/elementUtility';
-import { Container } from './base/containers/container';
+import { Structure } from './structure';
+import { FormAttribute } from './base/forms/interfaces/formModel';
 
 export class TreeLine extends Sortable
 {
@@ -69,7 +70,7 @@ export class TreeLine extends Sortable
 
   protected createItems(): void
   {
-    const items = this.structure.items;
+    const items = this.structure.getItems();
     if (items) {
       const visibleItemCount = this.getVisibleItemCount(items);
       let isOffset = false;
@@ -105,7 +106,7 @@ export class TreeLine extends Sortable
     return item;
   }
 
-  protected getItemValue(key: string, item: StructureItem): string
+  protected getItemValue(key: string, item: FormAttribute): string
   {
     const dataValue = this.data.item[key];
     if (item.options && dataValue) {
@@ -119,7 +120,7 @@ export class TreeLine extends Sortable
     return dataValue ? dataValue : null;
   }
 
-  protected getVisibleItemCount(items: { [name: string]: StructureItem }): number
+  protected getVisibleItemCount(items: { [name: string]: FormAttribute }): number
   {
     let count = 0;
     for (const key in items) {
@@ -139,7 +140,6 @@ export class TreeLine extends Sortable
 
     this.level = 0;
     this.data = { item: null };
-    this.structure = { name: null, parent: null };
     this.color = 'dark';
     this.textColor = 'light';
     this.offset = 0;

@@ -18,9 +18,11 @@
             'oblast': {
                 'name': 'oblast',
                 'label': 'oblast',
-                'addLineText': 'Přidat oblast',
                 'parent': null,
-                'useModalEdit': true,
+                'config': {
+                    'useModalEdit': true,
+                    'addLineText': 'Přidat oblast',
+                },
                 'items': {
                     'tdotconsek_pk': { 'type': 'text', 'isHidden': true },
                     'tdotconsek_nazev': { 'type': 'text', 'label': 'tdotconsek_nazev' },
@@ -30,9 +32,11 @@
             'kategorie': {
                 'name': 'kategorie',
                 'label': 'kategorie',
-                'addLineText': 'Přidat kategorii',
                 'parent': 'oblast',
-                'useModalEdit': true,
+                'config': {
+                    'addLineText': 'Přidat kategorii',
+                    'useModalEdit': true,
+                },
                 'items': {
                     'tdotconpsk_pk': { 'type': 'text', 'isHidden': true },
                     'tdotconpsk_nazev': { 'type': 'text', 'label': 'Nazev' },
@@ -42,12 +46,11 @@
             'otazka': {
                 'name': 'otazka',
                 'label': 'otázka',
-                'addLineText': 'Přidat otázku',
                 'parent': 'kategorie',
                 'useModalEdit': true,
-                'isSortable': true,
-                'useModalEdit': true,
-                'options': {
+                'config': {
+                    'isSortable': true,
+                    'useModalEdit': true,
                     'sortFunction': (itemA, itemB) => {
                         if (itemA.item.druh && itemA.item.druh === 'text')
                         {
@@ -146,7 +149,10 @@
             parentSelector: '#tree-widget-wrapper',
             data: data,
             structure: structure,
-            canEdit: true,
+            config: {
+                canEdit: true,
+                canAdd: false,
+            },
             events: {
                 onLineClick: (data, item) => { /*console.log(data); console.log(item)*/ },
                 onLineMove: (data, item) => { /*console.log(data); console.log(item)*/ },
