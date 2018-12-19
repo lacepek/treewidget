@@ -6,90 +6,6 @@
         crossorigin="anonymous">
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO"
         crossorigin="anonymous">
-    <style>
-        .tree-line-even {
-            background-color: rgb(255, 255, 255);
-        }
-
-        .tree-line-odd {
-            background-color: rgb(234, 234, 241);
-        }
-
-        .tree-line {
-            padding-top: 0.5em;
-            padding-bottom: 0.5em;
-        }
-
-        .modal-overlay {
-            position: absolute;
-            top: 0;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            background: rgba(0, 0, 0, 0.5);
-            visibility: hidden;
-        }
-
-        .modal-window {
-            margin: 75px auto;
-            padding: 20px;
-            background: #fff;
-            border: 1px solid #666;
-            box-shadow: 0 0 50px rgba(0, 0, 0, 0.5);
-            position: relative;
-            width: 45vw;
-        }
-
-        .modal-window .modal-window-large {
-            width: 75vw;
-        }
-
-        .modal-window .modal-window-small {
-            width: 25vw;
-        }
-
-        .light .modal-window {
-            border-color: #aaa;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.25);
-        }
-
-        .modal-window h2 {
-            margin-top: 0;
-            color: #666;
-            font-family: "Trebuchet MS", Tahoma, Arial, sans-serif;
-        }
-
-        .modal-window .close {
-            position: absolute;
-            width: 20px;
-            height: 20px;
-            top: 20px;
-            right: 20px;
-            opacity: 0.8;
-            transition: all 200ms;
-            font-size: 24px;
-            font-weight: bold;
-            text-decoration: none;
-            color: #666;
-        }
-
-        .modal-window .close:hover {
-            opacity: 1;
-        }
-
-        .modal-window .content {
-            max-height: 400px;
-            overflow: auto;
-        }
-
-        .modal-window p {
-            margin: 0 0 1em;
-        }
-
-        .modal-window p:last-child {
-            margin: 0;
-        }
-    </style>
 </head>
 
 <body>
@@ -105,11 +21,10 @@
                 'addLineText': 'Přidat oblast',
                 'parent': null,
                 'useModalEdit': true,
-                'canEdit': true,
                 'items': {
-                    'pk': { 'type': 'text', 'isHidden': true },
-                    'nazev': { 'type': 'text', 'label': 'Nazev' },
-                    'popis': { 'type': 'text', 'label': 'Popis' }
+                    'tdotconsek_pk': { 'type': 'text', 'isHidden': true },
+                    'tdotconsek_nazev': { 'type': 'text', 'label': 'tdotconsek_nazev' },
+                    'tdotconsek_popis': { 'type': 'text', 'label': 'Popis' }
                 }
             },
             'kategorie': {
@@ -118,11 +33,10 @@
                 'addLineText': 'Přidat kategorii',
                 'parent': 'oblast',
                 'useModalEdit': true,
-                'canEdit': true,
                 'items': {
-                    'pk': { 'type': 'text', 'isHidden': true },
-                    'nazev': { 'type': 'text', 'label': 'Nazev' },
-                    'popis': { 'type': 'text', 'label': 'Popis' }
+                    'tdotconpsk_pk': { 'type': 'text', 'isHidden': true },
+                    'tdotconpsk_nazev': { 'type': 'text', 'label': 'Nazev' },
+                    'tdotconpsk_popis': { 'type': 'text', 'label': 'Popis' }
                 }
             },
             'otazka': {
@@ -133,7 +47,17 @@
                 'useModalEdit': true,
                 'isSortable': true,
                 'useModalEdit': true,
-                'canEdit': true,
+                'options': {
+                    'sortFunction': (itemA, itemB) => {
+                        if (itemA.item.druh && itemA.item.druh === 'text')
+                        {
+                            return 1;
+                        } else
+                        {
+                            return -1;
+                        }
+                    }
+                },
                 'items': {
                     'pk': { 'type': 'text', 'isHidden': true },
                     'nazev': { 'name': 'nazev', 'type': 'text', 'label': 'Otázka' },
@@ -162,27 +86,42 @@
 
         var data = [
             {
-                'item': { 'nazev': 'Parent 1', 'popis': 'Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Lorem ipsum dolor sit amet, consectetuer adipiscing elit.', 'pk': 'oblast-1' },
+                'item': {
+                    'nazev': 'Parent 1',
+                    'popis': 'Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Lorem ipsum dolor sit amet, consectetuer adipiscing elit.',
+                    'pk': 693
+                },
                 'children': [
                     {
-                        'item': { 'nazev': 'Child 1', 'popis': 'Lorem ipsum dolor sit amet, consectetuer adipiscing elit.', 'pk': 'kategorie-1' },
+                        'item': {
+                            'tdotconpsk_nazev': 'Child 1',
+                            'tdotconpsk_popis': 'Lorem ipsum dolor sit amet, consectetuer adipiscing elit.',
+                            'tdotconpsk_pk': 18
+                        },
                         'children': [
                             {
-                                'item': { 'nazev': 'Grandchild 1', 'druh': 'skala', 'dulezitost': 'ano', 'pk': 'otazka-1' },
+                                'item': { 'nazev': 'Grandchild 12', 'druh': 'text', 'pk': 4 },
                             },
                             {
-                                'item': { 'nazev': 'Grandchild 2', 'druh': 'skala', 'dulezitost': 'ano', 'pk': 'otazka-2' },
+                                'item': { 'nazev': 'Grandchild 1', 'druh': 'skala', 'dulezitost': 'ano', 'pk': 1 },
                             },
                             {
-                                'item': { 'nazev': 'Grandchild 3', 'druh': 'skala', 'dulezitost': 'ne', 'pk': 'otazka-3' },
+                                'item': { 'nazev': 'Grandchild 2', 'druh': 'skala', 'dulezitost': 'ano', 'pk': 3 },
                             },
                             {
-                                'item': { 'nazev': 'Grandchild 4', 'druh': 'text', 'pk': 'otazka-4' },
+                                'item': { 'nazev': 'Grandchild 3', 'druh': 'skala', 'dulezitost': 'ne', 'pk': 2 },
+                            },
+                            {
+                                'item': { 'nazev': 'Grandchild 4', 'druh': 'text', 'pk': 4 },
                             }
                         ]
                     },
                     {
-                        item: { nazev: 'Child 2', popis: 'Lorem ipsum dolor sit amet, consectetuer adipiscing elit.', pk: 'kategorie-2' },
+                        'item': {
+                            'tdotconpsk_nazev': 'Child 2',
+                            'tdotconpsk_popis': 'Lorem ipsum dolor sit amet, consectetuer adipiscing elit.',
+                            'tdotconpsk_pk': 45
+                        },
                         children: [
                             {
                                 item: { nazev: 'Grandchild 5', druh: 'skala', dulezitost: 'ano', pk: 'otazka-1' },
@@ -195,7 +134,11 @@
                 ],
             },
             {
-                'item': { 'nazev': 'Parent 2', 'popis': 'Lorem ipsum dolor sit amet, consectetuer adipiscing elit.', 'pk': 'oblast-2' },
+                'item': {
+                    'tdotconsek_nazev': 'Parent 2',
+                    'tdotconsek_popis': 'Lorem ipsum dolor sit amet, consectetuer adipiscing elit.',
+                    'tdotconsek_pk': 15
+                },
             }
         ];
 
