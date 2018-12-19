@@ -81,8 +81,7 @@ export class Structure
   }
 }
 
-export interface StructureType
-{
+export type StructureType = {
   /**
    * Name of tree branch
    */
