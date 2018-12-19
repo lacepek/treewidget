@@ -68,20 +68,22 @@ export class Tree extends Component<{ data: Array<DataNode> }>
       this.state.data = this.data;
     }
 
-    for (const key in this.structure) {
-      const structure = this.structure[key];
+    this._structure = objectMap(this.structure, (structure: StructureType) =>
+    {
       const newStructure = new Structure(structure);
 
       if (newStructure.canEdit() === undefined) {
-        newStructure.setCanEdit(this.canEdit());
+        const canEdit = this.canEdit();
+        newStructure.setCanEdit(canEdit);
       }
 
       if (newStructure.canAdd() === undefined) {
-        newStructure.setCanAdd(this.canAdd());
+        const canAdd = this.canAdd();
+        newStructure.setCanAdd(canAdd);
       }
 
-      this._structure[key] = newStructure;
-    }
+      return newStructure;
+    });
 
     if (this._structure) {
       this.structureKeys = Object.keys(this._structure);
