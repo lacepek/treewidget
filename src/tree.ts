@@ -48,6 +48,11 @@ export class Tree extends Component<{ data: Array<DataNode> }>
     return this.config.canAdd;
   }
 
+  public getOffset(): number
+  {
+    return this.config.offset;
+  }
+
   public clearContent(): void
   {
     super.clearContent();
@@ -89,7 +94,7 @@ export class Tree extends Component<{ data: Array<DataNode> }>
       this.parentElement = document.body;
     }
 
-    const rootSortZone = this.createRootSortZone(); 
+    const rootSortZone = this.createRootSortZone();
 
     this.element = rootSortZone.element;
 
@@ -202,10 +207,13 @@ export class Tree extends Component<{ data: Array<DataNode> }>
     sortZone: TreeSortZone
   ): TreeLine
   {
-    const canEdit = this.canEdit() && structure.canEdit()
+    const canEdit = structure.canEdit();
     const canDrag = canEdit && structure.isSortable();
-    const container = sortZone;
-    const lineOptions = { parentElement, data, structure, level, canDrag, events: this.events, container, count }
+    const container = sortZone, treeConfig = this.config;
+    const attributes = { className: canEdit ? 'tree-line-edit' : '' };
+    const lineOptions = {
+      parentElement, data, structure, level, canDrag, events: this.events, container, count, treeConfig, attributes
+    }
 
     const line = new TreeLine(lineOptions);
     if (canEdit) {
@@ -228,8 +236,8 @@ export class Tree extends Component<{ data: Array<DataNode> }>
   {
     const addLineText = structure.getAddLineText();
     const text = addLineText ? addLineText : 'Add line +';
-
-    const line = new TreeLine({ parentElement, structure, level, count, text });
+    const attributes = { className: 'tree-line-add' };
+    const line = new TreeLine({ parentElement, structure, level, count, text, treeConfig: this.config, attributes });
     if (this.canAdd() && structure.canAdd()) {
       line.element.addEventListener('click', () =>
       {
@@ -347,6 +355,11 @@ export type TreeConfig = {
    * Can add lines
    */
   canAdd?: boolean;
+
+  /**
+   * How much each branch should be offseted
+   */
+  offset?: number;
 }
 
 export type DataNode = {

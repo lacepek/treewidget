@@ -1,4 +1,4 @@
-import { TreeEvents, DataNode} from './tree';
+import { TreeEvents, DataNode, TreeConfig} from './tree';
 import { Sortable, OnSortSuccessData } from './base/sortable';
 import { ElementUtility } from './base/utility/elementUtility';
 import { Structure } from './structure';
@@ -16,7 +16,10 @@ export class TreeLine extends Sortable
   public count: number;
   public text: string;
 
+  public treeConfig: TreeConfig;
   public events: TreeEvents;
+
+  private DEFAULT_OFFSET: number;
 
   public onSortSuccess(data: OnSortSuccessData): void
   {
@@ -53,7 +56,7 @@ export class TreeLine extends Sortable
       if (this.text) {
         this.element.innerHTML = this.text;
 
-        const offset = 10 + 20 * this.level;
+        const offset = this.calculateOffset();
         this.element.style.paddingLeft = `${offset}px`;
       } else if (this.data) {
         this.createItems();
@@ -84,7 +87,7 @@ export class TreeLine extends Sortable
             let itemElement = this.createItem(value, visibleItemCount);
 
             if (!isOffset) {
-              const offset = 10 + 20 * this.level;
+              const offset = this.calculateOffset();
               itemElement.style.paddingLeft = `${offset}px`;
               isOffset = true;
             }
@@ -92,6 +95,12 @@ export class TreeLine extends Sortable
         }
       }
     }
+  }
+
+  protected calculateOffset(): number
+  {
+    const offset = this.treeConfig.offset || this.DEFAULT_OFFSET;
+    return 10 + (offset * this.level);
   }
 
   protected createItem(value: string, itemCount: number): HTMLElement
@@ -142,7 +151,7 @@ export class TreeLine extends Sortable
     this.data = { item: null };
     this.color = 'dark';
     this.textColor = 'light';
-    this.offset = 0;
+    this.DEFAULT_OFFSET = 25;
 
     this.count = 0;
     this.text = null;
