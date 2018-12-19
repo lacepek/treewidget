@@ -49,10 +49,12 @@
                 'useModalEdit': true,
                 'options': {
                     'sortFunction': (itemA, itemB) => {
-                        if (itemA.item.dulezitost && itemA.item.dulezitost.value === 'ano') {
-                            return -1;
-                        } else {
+                        if (itemA.item.druh && itemA.item.druh === 'text')
+                        {
                             return 1;
+                        } else
+                        {
+                            return -1;
                         }
                     }
                 },
@@ -97,6 +99,9 @@
                             'tdotconpsk_pk': 18
                         },
                         'children': [
+                            {
+                                'item': { 'nazev': 'Grandchild 12', 'druh': 'text', 'pk': 4 },
+                            },
                             {
                                 'item': { 'nazev': 'Grandchild 1', 'druh': 'skala', 'dulezitost': 'ano', 'pk': 1 },
                             },

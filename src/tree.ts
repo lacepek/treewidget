@@ -104,6 +104,8 @@ export class Tree extends Component<{ data: Array<DataNode> }>
     this.options = { addLineText: null };
 
     this.events = {};
+    this.events.onLineClick = () => { };
+    this.events.onLineMove = () => { };
     this.events.onLineAddSubmit = (model: FormModel) => { return { model, isValid: true } };
     this.events.onLineEditSubmit = (model: FormModel) => { return { model, isValid: true } }
   }
@@ -115,7 +117,7 @@ export class Tree extends Component<{ data: Array<DataNode> }>
     parent: HTMLElement,
     sortZone: TreeSortZone,
   ): void
-  {  
+  {
     const structureKeys = Object.keys(this.structure);
     const structureKey = structureKeys[level];
     const structure = this.structure[structureKey];
@@ -123,8 +125,9 @@ export class Tree extends Component<{ data: Array<DataNode> }>
     const nextStructureKey = structureKeys[level + 1];
     const nextStructure = this.structure[nextStructureKey];
 
-    if (structure.options && structure.options.sortFunction) {
+    if (structure.options && structure.options.sortFunction && !structure.hasBeenSorted) {
       data.sort(structure.options.sortFunction);
+      structure.hasBeenSorted = true;
     }
 
     const keys = Object.keys(data);
@@ -353,6 +356,8 @@ export interface Structure
    * Can this level be edited
    */
   canEdit?: boolean;
+
+  hasBeenSorted?: boolean;
 
   /**
    * Other level options
