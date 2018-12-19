@@ -173,7 +173,7 @@ export class Tree extends Component<{ data: Array<DataNode> }>
       const canEdit = structure.canEdit();
       const isSortable = canEdit && structure.isSortable();
       if (isSortable) {
-        line.onSortSuccess = () => { this.setState({ data: this.state.data }) };
+        line.events.onLineMoveSuccess = () => { this.setState({ data: this.state.data }) };
       }
 
       if (canEdit && sortZone) {

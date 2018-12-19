@@ -1,4 +1,4 @@
-import { TreeEvents, DataNode, TreeConfig} from './tree';
+import { TreeEvents, DataNode, TreeConfig } from './tree';
 import { Sortable, OnSortSuccessData } from './base/sortable';
 import { ElementUtility } from './base/utility/elementUtility';
 import { Structure } from './structure';
@@ -17,21 +17,37 @@ export class TreeLine extends Sortable
   public text: string;
 
   public treeConfig: TreeConfig;
-  public events: TreeEvents;
+  public events: TreeLineEvents;
 
   private DEFAULT_OFFSET: number;
 
   public onSortSuccess(data: OnSortSuccessData): void
   {
+    if (this.events.onLineMoveSuccess) {
+      this.events.onLineMoveSuccess(data);
+    }
+
     let moveData = { ...data, ...{ text: 'text', name: 'name', canDrag: this.canDrag } };
-    return this.events.onLineMove(moveData, this.element);
+    let event = this.events.onLineMove;
+    if (typeof (event) === 'string') {
+      event = eval(event) as (data: OnLineMoveData, item: HTMLElement) => void;
+    }
+    return event(moveData, this.element);
   }
 
   protected render(): void
   {
     this.element.addEventListener(
       'click',
-      () => { this.events.onLineClick({ text: 'text', name: 'name', canDrag: this.canDrag }, this.element) },
+      () =>
+      {
+        let event = this.events.onLineClick;
+        if (typeof (event) === 'string') {
+          event = eval(event) as (data: LineData, item: HTMLElement) => void;
+        }
+
+        event({ text: 'text', name: 'name', canDrag: this.canDrag }, this.element);
+      },
       false
     );
 
@@ -159,11 +175,16 @@ export class TreeLine extends Sortable
     this.events = {};
     this.events.onLineClick = (data, item) => { };
     this.events.onLineMove = (data, item) => { };
+    this.events.onLineMoveSuccess = (data) => { };
   }
 }
 
-export interface LineData
+export interface TreeLineEvents extends TreeEvents
 {
+  onLineMoveSuccess?: (data: OnSortSuccessData) => void;
+}
+
+export type LineData = {
   text: string;
   name: string;
   canDrag: boolean;
