@@ -6,6 +6,7 @@ import { FormModel, FormAttribute } from './base/forms/interfaces/formModel';
 import objectMap from './base/utility/objectMap';
 import { TreeSortZone } from './treeSortZone';
 import { Structure, StructureType } from './structure';
+import isFunction from './base/utility/isFunction';
 
 /**
  * Main component of TreeWidget, renders tree-like structure from data with options to edit, add and rearrange lines,
@@ -144,7 +145,7 @@ export class Tree extends Component<{ data: Array<DataNode> }>
     const nextStructure = this._structure[nextStructureKey];
 
     const sortFunction = structure.getSortFunction();
-    if (sortFunction && !structure.hasBeenSorted) {
+    if (isFunction(sortFunction) && !structure.hasBeenSorted) {
       data.sort(sortFunction);
       structure.hasBeenSorted = true;
     }
@@ -289,9 +290,11 @@ export class Tree extends Component<{ data: Array<DataNode> }>
   {
     let result = { model: {}, isValid: false };
     if (isEditing) {
-      result = await this.events.onLineEditSubmit(model);
+        const onLineEditSubmit = this.events.onLineEditSubmit;
+        result = isFunction(onLineEditSubmit) ? await onLineEditSubmit(model) : {model: null, isValid: false};
     } else {
-      result = await this.events.onLineAddSubmit(model);
+      const onLineAddSubmit = this.events.onLineAddSubmit;
+      result = isFunction(onLineAddSubmit) ? await onLineAddSubmit(model) : {model: null, isValid: false};
     }
 
     if (result.isValid) {

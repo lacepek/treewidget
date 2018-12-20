@@ -3,6 +3,7 @@ import { Sortable, OnSortSuccessData } from './base/sortable';
 import { ElementUtility } from './base/utility/elementUtility';
 import { Structure } from './structure';
 import { FormAttribute } from './base/forms/interfaces/formModel';
+import isFunction from './base/utility/isFunction';
 
 export class TreeLine extends Sortable
 {
@@ -27,29 +28,21 @@ export class TreeLine extends Sortable
       this.events.onLineMoveSuccess(data);
     }
 
-    let moveData = { ...data, ...{ text: 'text', name: 'name', canDrag: this.canDrag } };
-    let event = this.events.onLineMove;
-    if (typeof (event) === 'string') {
-      event = eval(event) as (data: OnLineMoveData, item: HTMLElement) => void;
+    if (isFunction(this.events.onLineMove)) {
+      const moveData = { ...data, ...{ text: 'text', name: 'name', canDrag: this.canDrag } };
+      this.events.onLineMove(moveData, this.element);
     }
-    return event(moveData, this.element);
   }
 
   protected render(): void
   {
-    this.element.addEventListener(
-      'click',
-      () =>
-      {
-        let event = this.events.onLineClick;
-        if (typeof (event) === 'string') {
-          event = eval(event) as (data: LineData, item: HTMLElement) => void;
-        }
-
-        event({ text: 'text', name: 'name', canDrag: this.canDrag }, this.element);
-      },
-      false
-    );
+    if (isFunction(this.events.onLineClick)) {
+      this.element.addEventListener(
+        'click',
+        () => { this.events.onLineClick({ text: 'text', name: 'name', canDrag: this.canDrag }, this.element); },
+        false
+      );
+    }
 
     let className = 'tree-line row';
     if (this.count % 2 === 0) {
@@ -173,9 +166,6 @@ export class TreeLine extends Sortable
     this.text = null;
 
     this.events = {};
-    this.events.onLineClick = (data, item) => { };
-    this.events.onLineMove = (data, item) => { };
-    this.events.onLineMoveSuccess = (data) => { };
   }
 }
 
