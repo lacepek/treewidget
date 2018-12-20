@@ -6,6 +6,7 @@ import { FormModel, FormAttribute } from './base/forms/interfaces/formModel';
 import objectMap from './base/utility/objectMap';
 import { TreeSortZone } from './treeSortZone';
 import { Structure, StructureType } from './structure';
+import isFunction from './base/utility/isFunction';
 
 /**
  * Main component of TreeWidget, renders tree-like structure from data with options to edit, add and rearrange lines,
@@ -68,20 +69,22 @@ export class Tree extends Component<{ data: Array<DataNode> }>
       this.state.data = this.data;
     }
 
-    for (const key in this.structure) {
-      const structure = this.structure[key];
+    this._structure = objectMap(this.structure, (structure: StructureType) =>
+    {
       const newStructure = new Structure(structure);
 
       if (newStructure.canEdit() === undefined) {
-        newStructure.setCanEdit(this.canEdit());
+        const canEdit = this.canEdit();
+        newStructure.setCanEdit(canEdit);
       }
 
       if (newStructure.canAdd() === undefined) {
-        newStructure.setCanAdd(this.canAdd());
+        const canAdd = this.canAdd();
+        newStructure.setCanAdd(canAdd);
       }
 
-      this._structure[key] = newStructure;
-    }
+      return newStructure;
+    });
 
     if (this._structure) {
       this.structureKeys = Object.keys(this._structure);
@@ -142,7 +145,7 @@ export class Tree extends Component<{ data: Array<DataNode> }>
     const nextStructure = this._structure[nextStructureKey];
 
     const sortFunction = structure.getSortFunction();
-    if (sortFunction && !structure.hasBeenSorted) {
+    if (isFunction(sortFunction) && !structure.hasBeenSorted) {
       data.sort(sortFunction);
       structure.hasBeenSorted = true;
     }
@@ -171,7 +174,7 @@ export class Tree extends Component<{ data: Array<DataNode> }>
       const canEdit = structure.canEdit();
       const isSortable = canEdit && structure.isSortable();
       if (isSortable) {
-        line.onSortSuccess = () => { this.setState({ data: this.state.data }) };
+        line.events.onLineMoveSuccess = () => { this.setState({ data: this.state.data }) };
       }
 
       if (canEdit && sortZone) {
@@ -287,9 +290,11 @@ export class Tree extends Component<{ data: Array<DataNode> }>
   {
     let result = { model: {}, isValid: false };
     if (isEditing) {
-      result = await this.events.onLineEditSubmit(model);
+        const onLineEditSubmit = this.events.onLineEditSubmit;
+        result = isFunction(onLineEditSubmit) ? await onLineEditSubmit(model) : {model: null, isValid: false};
     } else {
-      result = await this.events.onLineAddSubmit(model);
+      const onLineAddSubmit = this.events.onLineAddSubmit;
+      result = isFunction(onLineAddSubmit) ? await onLineAddSubmit(model) : {model: null, isValid: false};
     }
 
     if (result.isValid) {

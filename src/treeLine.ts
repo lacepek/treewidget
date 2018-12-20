@@ -1,8 +1,9 @@
-import { TreeEvents, DataNode, TreeConfig} from './tree';
+import { TreeEvents, DataNode, TreeConfig } from './tree';
 import { Sortable, OnSortSuccessData } from './base/sortable';
 import { ElementUtility } from './base/utility/elementUtility';
 import { Structure } from './structure';
 import { FormAttribute } from './base/forms/interfaces/formModel';
+import isFunction from './base/utility/isFunction';
 
 export class TreeLine extends Sortable
 {
@@ -17,23 +18,31 @@ export class TreeLine extends Sortable
   public text: string;
 
   public treeConfig: TreeConfig;
-  public events: TreeEvents;
+  public events: TreeLineEvents;
 
   private DEFAULT_OFFSET: number;
 
   public onSortSuccess(data: OnSortSuccessData): void
   {
-    let moveData = { ...data, ...{ text: 'text', name: 'name', canDrag: this.canDrag } };
-    return this.events.onLineMove(moveData, this.element);
+    if (this.events.onLineMoveSuccess) {
+      this.events.onLineMoveSuccess(data);
+    }
+
+    if (isFunction(this.events.onLineMove)) {
+      const moveData = { ...data, ...{ text: 'text', name: 'name', canDrag: this.canDrag } };
+      this.events.onLineMove(moveData, this.element);
+    }
   }
 
   protected render(): void
   {
-    this.element.addEventListener(
-      'click',
-      () => { this.events.onLineClick({ text: 'text', name: 'name', canDrag: this.canDrag }, this.element) },
-      false
-    );
+    if (isFunction(this.events.onLineClick)) {
+      this.element.addEventListener(
+        'click',
+        () => { this.events.onLineClick({ text: 'text', name: 'name', canDrag: this.canDrag }, this.element); },
+        false
+      );
+    }
 
     let className = 'tree-line row';
     if (this.count % 2 === 0) {
@@ -157,13 +166,15 @@ export class TreeLine extends Sortable
     this.text = null;
 
     this.events = {};
-    this.events.onLineClick = (data, item) => { };
-    this.events.onLineMove = (data, item) => { };
   }
 }
 
-export interface LineData
+export interface TreeLineEvents extends TreeEvents
 {
+  onLineMoveSuccess?: (data: OnSortSuccessData) => void;
+}
+
+export type LineData = {
   text: string;
   name: string;
   canDrag: boolean;
