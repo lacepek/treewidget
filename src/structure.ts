@@ -79,6 +79,11 @@ export class Structure
   {
     return this.getConfig().sortFunction;
   }
+
+  public getStructureType(): StructureType
+  {
+    return this.structure;
+  }
 }
 
 export type StructureType = {

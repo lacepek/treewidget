@@ -22,14 +22,14 @@ export class TreeLine extends Sortable
 
   private DEFAULT_OFFSET: number;
 
-  public onSortSuccess(data: OnSortSuccessData): void
+  public onSortSuccess(sortData: OnSortSuccessData): void
   {
     if (this.events.onLineMoveSuccess) {
-      this.events.onLineMoveSuccess(data);
+      this.events.onLineMoveSuccess(sortData);
     }
 
     if (isFunction(this.events.onLineMove)) {
-      const moveData = { ...data, ...{ text: 'text', name: 'name', canDrag: this.canDrag } };
+      const moveData = { ...sortData, ...{ name: this.structure.getName(), canDrag: this.canDrag, item: this.data.item } };
       this.events.onLineMove(moveData, this.element);
     }
   }
@@ -39,7 +39,7 @@ export class TreeLine extends Sortable
     if (isFunction(this.events.onLineClick)) {
       this.element.addEventListener(
         'click',
-        () => { this.events.onLineClick({ text: 'text', name: 'name', canDrag: this.canDrag }, this.element); },
+        () => { this.events.onLineClick({ name: this.structure.getName(), canDrag: this.canDrag }, this.element); },
         false
       );
     }
@@ -175,11 +175,11 @@ export interface TreeLineEvents extends TreeEvents
 }
 
 export type LineData = {
-  text: string;
   name: string;
   canDrag: boolean;
 }
 
 export interface OnLineMoveData extends LineData, OnSortSuccessData
 {
+  item: { [name: string]: string }
 }

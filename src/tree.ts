@@ -261,6 +261,7 @@ export class Tree extends Component<{ data: Array<DataNode> }>
       {
         if (isEditing) {
           const key = item.name;
+
           if (key in data.item) {
             item.value = data.item[key];
           }
@@ -269,16 +270,16 @@ export class Tree extends Component<{ data: Array<DataNode> }>
         return item;
       });
 
-      this.showModal(data, model, isEditing);
+      this.showModal(data, model, structure.getStructureType(), isEditing);
     }
   }
 
-  protected showModal(data: DataNode, model: FormModel, isEditing: boolean): void
+  protected showModal(data: DataNode, model: FormModel, structureType: StructureType, isEditing: boolean): void
   {
     const form = new TreeForm({
       model,
       onCancel: () => { this.modal.hide() },
-      onSubmit: async () => this.onModalSubmit(data, model, isEditing)
+      onSubmit: async () => this.onModalSubmit(data, model, structureType, isEditing)
     });
 
     this.modal.setState({ content: form });
@@ -286,18 +287,19 @@ export class Tree extends Component<{ data: Array<DataNode> }>
     this.modal.show();
   }
 
-  protected async onModalSubmit(data: DataNode, model: FormModel, isEditing: boolean)
+  protected async onModalSubmit(data: DataNode, model: FormModel, structureType: StructureType, isEditing: boolean)
   {
-    let result = { model: {}, isValid: false };
-    if (isEditing) {
-        const onLineEditSubmit = this.events.onLineEditSubmit;
-        result = isFunction(onLineEditSubmit) ? await onLineEditSubmit(model) : {model: null, isValid: false};
-    } else {
-      const onLineAddSubmit = this.events.onLineAddSubmit;
-      result = isFunction(onLineAddSubmit) ? await onLineAddSubmit(model) : {model: null, isValid: false};
+    let result = { model: {}, isOk: false };
+    const onLineEditSubmit = this.events.onLineEditSubmit;
+    const onLineAddSubmit = this.events.onLineAddSubmit;
+    
+    if (isEditing && isFunction(onLineEditSubmit)) {
+      result = await onLineEditSubmit(model, structureType.name);
+    } else if (isFunction(onLineAddSubmit)) {
+      result = await onLineAddSubmit(model, structureType.name);
     }
 
-    if (result.isValid) {
+    if (result.isOk) {
       this.modal.hide();
 
       const item = objectMap(result.model, (attribute: FormAttribute) =>
@@ -330,25 +332,29 @@ export class Tree extends Component<{ data: Array<DataNode> }>
     this.events = {};
     this.events.onLineClick = () => { };
     this.events.onLineMove = () => { };
-    this.events.onLineAddSubmit = (model: FormModel) => { return { model, isValid: true } };
-    this.events.onLineEditSubmit = (model: FormModel) => { return { model, isValid: true } }
+    this.events.onLineAddSubmit = (model: FormModel) => { return { model, isOk: true } };
+    this.events.onLineEditSubmit = (model: FormModel) => { return { model, isOk: true } }
   }
 }
 
 export type TreeEvents = {
   onLineClick?: (data: LineData, item: HTMLElement) => void;
-  onLineMove?: (data: OnLineMoveData, item: HTMLElement) => void;
+  onLineMove?: OnLineMoveEvent;
 
   /**
    * Fires when new line was submited
    */
-  onLineAddSubmit?: (model: FormModel) => { model: FormModel, isValid: boolean }
+  onLineAddSubmit?: OnLineSubmitEvent;
 
   /**
    * Fires when line edit was submited
    */
-  onLineEditSubmit?: (model: FormModel) => { model: FormModel, isValid: boolean }
+  onLineEditSubmit?: OnLineSubmitEvent;
 }
+
+export type OnLineSubmitEvent = (model: FormModel, name: string) => { model: FormModel, isOk: boolean };
+
+export type OnLineMoveEvent = (moveData: OnLineMoveData, item: HTMLElement) => void;
 
 export type TreeConfig = {
   /**

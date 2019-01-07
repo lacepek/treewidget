@@ -44,11 +44,11 @@ export default class Select extends Component<{}>
 
     this.select = this.createElement('select', null, {
       className: 'form-control',
-      type: this.type,
-      name: this.name,
+      type: this.attributes.type,
+      name: this.attributes.name,
       id: id,
-      value: this.value,
-      disabled: this.disabled
+      value: this.attributes.value,
+      disabled: this.attributes.disabled
     }) as HTMLSelectElement;
 
     this.select.onchange = (event: Event) =>
@@ -62,7 +62,7 @@ export default class Select extends Component<{}>
 
     this.element.appendChild(this.select);
 
-    this.setValue(this.select.value);
+    this.setValue(this.attributes.value);
   }
 
   public getValue(): string

@@ -24,9 +24,9 @@
                     'addLineText': 'Přidat oblast',
                 },
                 'items': {
-                    'pk': { 'type': 'text', 'isHidden': true },
-                    'nazev': { 'type': 'text', 'label': 'tdotconsek_nazev' },
-                    'popis': { 'type': 'text', 'label': 'Popis' }
+                    'pk': { 'name': 'pk', 'type': 'text', 'isHidden': true },
+                    'nazev': { 'name': 'nazev', 'type': 'text', 'label': 'Nazev' },
+                    'popis': { 'name': 'popis', 'type': 'text', 'label': 'Popis' }
                 }
             },
             'kategorie': {
@@ -38,9 +38,9 @@
                     'useModalEdit': true,
                 },
                 'items': {
-                    'pk': { 'type': 'text', 'isHidden': true },
-                    'nazev': { 'type': 'text', 'label': 'Nazev' },
-                    'popis': { 'type': 'text', 'label': 'Popis' }
+                    'pk': { 'name': 'pk', 'type': 'text', 'isHidden': true },
+                    'nazev': { 'name': 'nazev', 'type': 'text', 'label': 'Nazev' },
+                    'popis': { 'name': 'popis', 'type': 'text', 'label': 'Popis' }
                 }
             },
             'otazka': {
@@ -63,7 +63,7 @@
                     }
                 },
                 'items': {
-                    'pk': { 'type': 'text', 'isHidden': true },
+                    'pk': { 'name': 'pk', 'type': 'text', 'isHidden': true },
                     'nazev': { 'name': 'nazev', 'type': 'text', 'label': 'Otázka' },
                     'druh': {
                         'name': 'druh',
@@ -77,7 +77,7 @@
                     },
                     'dulezitost': {
                         'name': 'dulezitost',
-                        'type': 'radio',
+                        'type': 'select',
                         'label': 'Dulezitost',
                         'options': {
                             'ano': { 'key': 'ano', 'value': 'Ano' },
@@ -153,23 +153,7 @@
             config: {
                 canEdit: true,
                 canAdd: true,
-            },
-            events: {
-                onLineClick: (data, item) => { console.log(data); console.log(item) },
-                onLineMove: (data, item) => { console.log(data); console.log(item) },
-                onLineAddSubmit: async (model) => {
-                    console.log(model);
-
-                    model.pk = Math.floor(Math.random() * 100000);
-
-                    return { model, isValid: true };
-                },
-                onLineEditSubmit: async (model) => {
-                    console.log(model);
-
-                    return { model, isValid: true };
-                }
-            },
+            }
         });
     </script>
 </body>
