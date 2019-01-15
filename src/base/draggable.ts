@@ -4,7 +4,7 @@ import { DropZone } from './containers/dropzone';
 export class Draggable extends Component<{}> implements IDraggable
 {
   public container: DropZone;
-  public canDrag: boolean = false;
+  public canDrag: boolean;
 
   public initDragEvents(): void
   {
@@ -34,6 +34,12 @@ export class Draggable extends Component<{}> implements IDraggable
   private clearCurrent(): void
   {
     this.container.current = null;
+  }
+
+  protected setDefaultProps(): void
+  {
+    super.setDefaultProps();
+    this.canDrag = false;
   }
 }
 

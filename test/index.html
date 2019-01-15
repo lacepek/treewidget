@@ -52,14 +52,46 @@
                     'useModalEdit': true,
                     'isSortable': true,
                     'canEdit': true,
-                    'sortFunction': (itemA, itemB) => {
-                        if (itemA.item.druh && itemA.item.druh === 'text')
+                    'sortFunction': (dataA, dataB) => {
+                        const itemA = dataA.item;
+                        const itemB = dataB.item;
+                        if (itemA.druh && itemB.druh)
                         {
-                            return 1;
-                        } else
-                        {
-                            return -1;
+                            if (itemA.druh > itemB.druh)
+                            {
+                                return 1;
+                            }
+                            if (itemA.druh < itemB.druh)
+                            {
+                                return -1;
+                            }
                         }
+
+                        return 0;
+                    },
+                    'canEditFunction': (data) => {
+                        if (data.item.druh && data.item.druh !== 'text')
+                        {
+                            return false;
+                        }
+
+                        return true;
+                    },
+                    'canAddFunction': (data) => {
+                        if (data.children)
+                        {
+                            const count = data.children.length;
+                            return count < 4;
+                        }
+
+                        return false;
+                    },
+                    'isSortableFunction': (data) => {
+                        if (data.item.druh && data.item.druh !== 'text')
+                        {
+                            return true;
+                        }
+                        return false;
                     }
                 },
                 'items': {
@@ -85,76 +117,39 @@
                         }
                     }
                 }
-            },
+            }
         };
 
-        var data = [
-            {
-                'item': {
-                    'nazev': 'Parent 1',
-                    'popis': 'Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Lorem ipsum dolor sit amet, consectetuer adipiscing elit.',
-                    'pk': 693
-                },
-                'children': [
-                    {
-                        'item': {
-                            'nazev': 'Child 1',
-                            'popis': 'Lorem ipsum dolor sit amet, consectetuer adipiscing elit.',
-                            'pk': 18
-                        },
-                        'children': [
-                            {
-                                'item': { 'nazev': 'Grandchild 12', 'druh': 'text', 'pk': 4 },
-                            },
-                            {
-                                'item': { 'nazev': 'Grandchild 1', 'druh': 'skala', 'dulezitost': 'ano', 'pk': 1 },
-                            },
-                            {
-                                'item': { 'nazev': 'Grandchild 2', 'druh': 'skala', 'dulezitost': 'ano', 'pk': 3 },
-                            },
-                            {
-                                'item': { 'nazev': 'Grandchild 3', 'druh': 'skala', 'dulezitost': 'ne', 'pk': 2 },
-                            },
-                            {
-                                'item': { 'nazev': 'Grandchild 4', 'druh': 'text', 'pk': 4 },
-                            }
-                        ]
-                    },
-                    {
-                        'item': {
-                            'nazev': 'Child 2',
-                            'popis': 'Lorem ipsum dolor sit amet, consectetuer adipiscing elit.',
-                            'pk': 45
-                        },
-                        children: [
-                            {
-                                item: { nazev: 'Grandchild 5', druh: 'skala', dulezitost: 'ano', pk: 'otazka-1' },
-                            },
-                            {
-                                item: { nazev: 'Grandchild 6', druh: 'skala', dulezitost: 'ano', pk: 'otazka-2' },
-                            },
-                        ]
-                    }
-                ],
-            },
-            {
-                'item': {
-                    'nazev': 'Parent 2',
-                    'popis': 'Lorem ipsum dolor sit amet, consectetuer adipiscing elit.',
-                    'pk': 15
-                },
-            }
-        ];
+        createTreeWidget(structure);
 
-        TreeWidget.create({
-            parentSelector: '#tree-widget-wrapper',
-            data: data,
-            structure: structure,
-            config: {
-                canEdit: true,
-                canAdd: true,
-            }
-        });
+        async function createTreeWidget(structure) {
+            const apiUrl = 'http://localhost:3000/treedata';
+            const request = new Request(apiUrl);
+            const response = await (await fetch(request)).json();
+
+            TreeWidget.create({
+                parentSelector: '#tree-widget-wrapper',
+                data: response.data,
+                structure: structure,
+                config: {
+                    canEdit: true,
+                    canAdd: true,
+                    offset: 50
+                }
+            });
+
+            const onLineEdit = async (model, name, parentModel) => {
+                const response = await fetch(request);
+                return { model, response: await response.json() };
+            };
+            const onLineAdd = async (model, name, parentModel) => {
+                const response = await fetch(request);
+                return { model, response: await response.json() };
+            };
+
+            TreeWidget.setOnLineEditSubmit(onLineEdit);
+            TreeWidget.setOnLineAddSubmit(onLineAdd);
+        };
     </script>
 </body>
 

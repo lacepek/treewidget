@@ -157,7 +157,7 @@ export class TreeLine extends Sortable
     super.setDefaultProps();
 
     this.level = 0;
-    this.data = { item: null };
+    this.data = { item: null, index: 0 };
     this.color = 'dark';
     this.textColor = 'light';
     this.DEFAULT_OFFSET = 25;

@@ -1,10 +1,12 @@
 import SortZone from "./base/containers/sortzone";
 import { TreeLine } from "./treeLine";
 import { ContainerChild } from "./base/containers/container";
+import { FormModel } from "./base/forms/interfaces/formModel";
 
 export class TreeSortZone extends SortZone
 {
   public data: any;
+  public model: FormModel;
 
   public onDrop(event: Event, target: HTMLElement): void
   {
@@ -26,7 +28,7 @@ export class TreeSortZone extends SortZone
       if (this.canMoveChild(targetChild)) {
         this.moveChild(currentIndex, targetIndex);
 
-        const positionChange = targetIndex - currentIndex;
+        const positionChange = currentIndex - targetIndex;
         this.current.component.onSortSuccess({ lastIndex: currentIndex, index: targetIndex, positionChange });
       }
     }
@@ -59,7 +61,7 @@ export class TreeSortZone extends SortZone
       const targetParent = targetComponent.parent;
       const parent = this.current.component.parent;
       if (targetParent && targetParent.data && targetParent.data.children) {
-        return parent === targetParent;
+        return parent === targetParent && targetComponent.canDrag;
       }
     }
 

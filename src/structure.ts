@@ -1,4 +1,5 @@
 import { FormAttribute } from "./base/forms/interfaces/formModel";
+import { DataNode } from "./tree";
 
 export class Structure
 {
@@ -45,7 +46,7 @@ export class Structure
     return this.getConfig().addLineText;
   }
 
-  public canEdit(): boolean
+  public getCanEdit(): boolean
   {
     return this.getConfig().canEdit;
   }
@@ -55,7 +56,7 @@ export class Structure
     this.getConfig().canEdit = canEdit;
   }
 
-  public canAdd(): boolean
+  public getCanAdd(): boolean
   {
     return this.getConfig().canAdd;
   }
@@ -65,17 +66,17 @@ export class Structure
     this.getConfig().canAdd = canAdd;
   }
 
-  public useModalEdit(): boolean
+  public getUseModalEdit(): boolean
   {
     return this.getConfig().useModalEdit;
   }
 
-  public isSortable(): boolean
+  public getIsSortable(): boolean
   {
     return this.getConfig().isSortable;
   }
 
-  public getSortFunction(): (itemA: any, itemB: any) => number
+  public getSortFunction(): CompareCallback
   {
     return this.getConfig().sortFunction;
   }
@@ -83,6 +84,26 @@ export class Structure
   public getStructureType(): StructureType
   {
     return this.structure;
+  }
+
+  public getCanEditFunction(): EditCallback
+  {
+    return this.getConfig().canEditFunction;
+  }
+
+  public getCanAddFunction(): EditCallback
+  {
+    return this.getConfig().canAddFunction;
+  }
+
+  public getIsSortableFunction(): EditCallback
+  {
+    return this.getConfig().isSortableFunction;
+  }
+
+  public getUseModalEditFunction(): EditCallback
+  {
+    return this.getConfig().useModalEditFunction;
   }
 }
 
@@ -140,7 +161,19 @@ export type StructureConfig = {
   isSortable?: boolean;
 
   /**
-   * Custom sorting function, sorts once when the tree is initialized 
+   * Custom sorting function, sorts once when the tree is initialized or when new line is added
    */
-  sortFunction?: (itemA: any, itemB: any) => number;
+  sortFunction?: CompareCallback;
+
+  canEditFunction?: EditCallback;
+
+  isSortableFunction?: EditCallback;
+
+  canAddFunction?: EditCallback;
+
+  useModalEditFunction?: EditCallback;
 }
+
+export type CompareCallback = (dataA: DataNode, dataB: DataNode) => number;
+
+export type EditCallback = (data: DataNode) => boolean; 
