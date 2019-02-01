@@ -20,10 +20,6 @@
   text-decoration: underline;
 }
 
-.tree-line-add:hover {
-  cursor: pointer;
-}
-
-.tree-line-edit:hover {
+.tree-line-add:hover, .tree-line-edit:hover, .tree-line-delete:hover {
   cursor: pointer;
 }

@@ -1,9 +1,8 @@
 import { Component } from './component';
 import { ElementUtility } from './utility/elementUtility';
 
-export class Modal extends Component<{ content: any }>
+export class Modal extends Component<{ content?: any, title?: any }>
 {
-  public title: { size: number, text: string };
   public content: any;
   public hasCloseButton: boolean;
 
@@ -33,9 +32,8 @@ export class Modal extends Component<{ content: any }>
       { className: 'modal-window' }
     );
 
-    if (this.title) {
-      const titleElement = this.createElement(`h${this.title.size}`, this.title.text);
-      windowHeader.appendChild(titleElement);
+    if (this.state.title) {
+      windowHeader.appendChild(this.state.title);
     }
 
     if (this.hasCloseButton) {

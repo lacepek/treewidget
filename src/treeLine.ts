@@ -13,9 +13,11 @@ export class TreeLine extends Sortable
   public color: string;
   public textColor: string;
   public offset: number;
-  public canEdit: boolean;
   public count: number;
   public text: string;
+  public deleteButton: HTMLElement;
+  public canDelete: boolean;
+  public canEdit: boolean;
 
   public treeConfig: TreeConfig;
   public events: TreeLineEvents;
@@ -27,9 +29,16 @@ export class TreeLine extends Sortable
     if (this.events.onLineMoveSuccess) {
       this.events.onLineMoveSuccess(sortData);
     }
-
-    if (isFunction(this.events.onLineMove)) {
-      const moveData = { ...sortData, ...{ name: this.structure.getName(), canDrag: this.canDrag, item: this.data.item } };
+    const onLineMove = this.events.onLineMove;
+    const moveLineUrl = this.structure.getMoveLineUrl();
+    if (moveLineUrl) {
+      fetch(moveLineUrl);
+    }
+    else if (isFunction(onLineMove)) {
+      const moveData = {
+        ...sortData,
+        ...{ name: this.structure.getName(), canDrag: this.canDragLine(), item: this.data.item }
+      };
       this.events.onLineMove(moveData, this.element);
     }
   }
@@ -39,7 +48,10 @@ export class TreeLine extends Sortable
     if (isFunction(this.events.onLineClick)) {
       this.element.addEventListener(
         'click',
-        () => { this.events.onLineClick({ name: this.structure.getName(), canDrag: this.canDrag }, this.element); },
+        () =>
+        {
+          this.events.onLineClick({ name: this.structure.getName(), canDrag: this.canDragLine() }, this.element);
+        },
         false
       );
     }
@@ -51,14 +63,16 @@ export class TreeLine extends Sortable
       className = `${className} tree-line-odd`;
     }
 
-    if (this.attributes.className) {
+    if (this.canEditLine()) {
+      className = `${className} tree-line-edit`;
+    } else if (this.attributes.className) {
       className = `${className} ${this.attributes.className}`;
     }
 
     this.setAttribute('class', className);
 
     if (this.parentElement) {
-      if (this.canDrag) {
+      if (this.canDragLine()) {
         this.setAttribute('draggable', true);
       }
 
@@ -69,6 +83,10 @@ export class TreeLine extends Sortable
         this.element.style.paddingLeft = `${offset}px`;
       } else if (this.data) {
         this.createItems();
+
+        if (this.canDeleteLine()) {
+          this.createDeleteButton();
+        }
       }
     }
   }
@@ -93,7 +111,9 @@ export class TreeLine extends Sortable
           const value = this.getItemValue(key, item);
 
           if (!item.isHidden) {
-            let itemElement = this.createItem(value, visibleItemCount);
+            const itemElement = this.createItem(value, visibleItemCount);
+
+            this.addContent(itemElement);
 
             if (!isOffset) {
               const offset = this.calculateOffset();
@@ -106,22 +126,48 @@ export class TreeLine extends Sortable
     }
   }
 
-  protected calculateOffset(): number
+  public canEditLine()
   {
-    const offset = this.treeConfig.offset || this.DEFAULT_OFFSET;
-    return 10 + (offset * this.level);
+    const canEditFunction = this.structure.getCanEditFunction();
+    const canEditLine = canEditFunction !== undefined ? canEditFunction(this.data) : null;
+    return canEditLine !== null ? canEditLine && this.structure.getCanEdit() : this.structure.getCanEdit();
+  }
+
+  public canDragLine()
+  {
+    const isSortableFunction = this.structure.getIsSortableFunction();
+    const canSortLine = isSortableFunction !== undefined ? isSortableFunction(this.data) : null;
+    return canSortLine !== null ? this.structure.getIsSortable() && canSortLine : this.structure.getIsSortable();
+  }
+
+  public canDeleteLine()
+  {
+    return this.structure.getCanDelete();
   }
 
   protected createItem(value: string, itemCount: number): HTMLElement
   {
-    const columnSize = Math.round(12 / itemCount);
-    let className = `col-${Math.max(1, columnSize)}`;
+    const maxColumns = this.canDeleteLine() ? 11 : 12;
+    const columnSize = Math.floor(maxColumns / itemCount);
+    const className = `col-${Math.max(1, columnSize)}`;
 
-    let item = ElementUtility.createElement('div', value, { className });
-
-    this.addContent(item);
+    const item = ElementUtility.createElement('div', value, { className });
 
     return item;
+  }
+
+  protected createDeleteButton(): void
+  {
+    this.deleteButton = ElementUtility.createElement('i', null, { className: 'fas fa-trash-alt tree-line-delete' });
+    const wrapper = ElementUtility.createElement('div', this.deleteButton, { className: 'col text-right' });
+
+    this.addContent(wrapper);
+  }
+
+  protected calculateOffset(): number
+  {
+    const offset = this.treeConfig.offset || this.DEFAULT_OFFSET;
+    return 10 + (offset * this.level);
   }
 
   protected getItemValue(key: string, item: FormAttribute): string
@@ -172,6 +218,7 @@ export class TreeLine extends Sortable
 export interface TreeLineEvents extends TreeEvents
 {
   onLineMoveSuccess?: (data: OnSortSuccessData) => void;
+  onLineDelete?: () => void;
 }
 
 export type LineData = {

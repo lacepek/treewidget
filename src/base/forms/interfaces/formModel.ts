@@ -6,13 +6,12 @@ export interface FormModel
 export interface FormAttribute
 {
   name: string;
-  value: any;
   type: string;
+  value?: any;
   label?: string;
   disabled?: boolean;
   isHidden?: boolean;
   options?: { [name: string]: FormAttributeOption };
-  defaultValue?: any;
 }
 
 export interface FormAttributeOption

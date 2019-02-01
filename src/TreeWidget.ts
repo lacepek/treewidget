@@ -20,6 +20,11 @@ export default class TreeWidget
     this.tree.events.onLineAddSubmit = onLineAddSubmit;
   }
 
+  public static setOnLineDeleteSubmit(onLineDeleteSubmit: OnLineSubmitEvent): void
+  {
+    this.tree.events.onLineDeleteSubmit = onLineDeleteSubmit;
+  }
+
   public static setOnLineMove(onLineMove: OnLineMoveEvent): void
   {
     this.tree.events.onLineMove = onLineMove;
@@ -27,6 +32,6 @@ export default class TreeWidget
 
   public static setStructure(structure: { [name: string]: StructureType })
   {
-    this.tree.structure = structure;
+    this.tree.structures = structure;
   }
 }

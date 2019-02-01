@@ -7,9 +7,10 @@ import objectMap from './base/utility/objectMap';
 import { TreeSortZone } from './treeSortZone';
 import { Structure, StructureType } from './structure';
 import isFunction from './base/utility/isFunction';
+import fetchPost from './fetchPost';
 
 /**
- * Main component of TreeWidget, renders tree-like structure from data with options to edit, add and rearrange lines,
+ * Main component of TreeWidget, renders tree-like structures from data with options to edit, add and rearrange lines,
  * with ability to hook function callbacks to these events
  */
 export class Tree extends Component<{
@@ -25,7 +26,7 @@ export class Tree extends Component<{
   /**
    * Settings for how the data should be structured
    */
-  public structure: { [name: string]: StructureType };
+  public structures: { [name: string]: StructureType };
 
   /**
    * Event callback hooks
@@ -40,7 +41,7 @@ export class Tree extends Component<{
   private modal: Modal;
   private wrapper: HTMLElement;
   private structureKeys: string[];
-  private _structure: { [name: string]: Structure };
+  private _structures: { [name: string]: Structure };
 
   public canEdit(): boolean
   {
@@ -50,6 +51,11 @@ export class Tree extends Component<{
   public canAdd(): boolean
   {
     return this.config.canAdd;
+  }
+
+  public canDelete(): boolean
+  {
+    return this.config.canDelete;
   }
 
   public getOffset(): number
@@ -74,30 +80,15 @@ export class Tree extends Component<{
 
     this.state.shouldSortStructure = { shouldSort: false, structure: null };
 
-    this._structure = objectMap(this.structure, (structure: StructureType) =>
-    {
-      const newStructure = new Structure(structure);
-
-      if (newStructure.getCanEdit() === undefined) {
-        const canEdit = this.canEdit();
-        newStructure.setCanEdit(canEdit);
-      }
-
-      if (newStructure.getCanAdd() === undefined) {
-        const canAdd = this.canAdd();
-        newStructure.setCanAdd(canAdd);
-      }
-
-      return newStructure;
-    });
-
-    if (this._structure) {
-      this.structureKeys = Object.keys(this._structure);
-    }
+    this.initStructures();
   }
 
   protected render(): void
   {
+    if (!this.state.data) {
+      return;
+    }
+
     if (!this.parentElement) {
       this.parentElement = document.body;
     }
@@ -117,7 +108,7 @@ export class Tree extends Component<{
     this.createLines(this.state.data, null, level, iterator, this.element, rootSortZone);
 
     this.modal = new Modal({
-      parentElement: this.element, title: { size: 3, text: 'Header' },
+      parentElement: this.element,
     });
 
     this.parentElement.appendChild(this.wrapper);
@@ -126,7 +117,7 @@ export class Tree extends Component<{
   protected createRootSortZone(): TreeSortZone
   {
     const structureKey = this.structureKeys[0];
-    const structure = this._structure[structureKey];
+    const structure = this._structures[structureKey];
     const canDrop = structure.getCanEdit() && structure.getIsSortable();
     return new TreeSortZone({
       tag: 'div',
@@ -147,10 +138,10 @@ export class Tree extends Component<{
   ): void
   {
     const structureKey = this.structureKeys[level];
-    const structure = this._structure[structureKey];
+    const structure = this._structures[structureKey];
 
     const nextStructureKey = this.structureKeys[level + 1];
-    const nextStructure = this._structure[nextStructureKey];
+    const nextStructure = this._structures[nextStructureKey];
 
     this.sortLines(structure, data, parentData);
 
@@ -175,8 +166,8 @@ export class Tree extends Component<{
       this.createLine(level, iterator.count, parent, dataNode, structure, sortZone);
 
       const canDrop = this.canEdit && nextStructure && nextStructure.getIsSortable();
-      const parentElement = parent, parentModel = this.createModel(dataNode, structure, false);
-      const newSortZone = new TreeSortZone({ tag: 'div', data: dataNode, canDrop, parentElement, model: parentModel });
+      const parentElement = parent;
+      const newSortZone = new TreeSortZone({ tag: 'div', data: dataNode, canDrop, parentElement });
 
       const container = newSortZone.element;
       container.setAttribute('class', structure.getName());
@@ -221,35 +212,37 @@ export class Tree extends Component<{
     sortZone: TreeSortZone
   ): TreeLine
   {
-    const canEditFunction = structure.getCanEditFunction();
-    const canEditLine = canEditFunction !== undefined ? canEditFunction(data) : null;
-    const canEdit = canEditLine !== null ? canEditLine && structure.getCanEdit() : structure.getCanEdit();
-
-    const isSortableFunction = structure.getIsSortableFunction();
-    const canSortLine = isSortableFunction !== undefined ? isSortableFunction(data): null;
-    const canDrag = canSortLine !== null ? structure.getIsSortable() && canSortLine : structure.getIsSortable();
-
     const container = sortZone, treeConfig = this.config, events = this.events, parentData = sortZone.data;
-    const attributes = { className: canEdit ? 'tree-line-edit' : '' };
     const lineOptions = {
-      parentElement, data, structure, level, canDrag, events, container, count, treeConfig, attributes, parentData
+      parentElement, data, structure, level, events, container, count, treeConfig
     }
 
     const line = new TreeLine(lineOptions);
 
-    if (canDrag) {
+    if (line.canDragLine()) {
       line.events.onLineMoveSuccess = () => { this.setState({ data: this.state.data }) };
+    }
+
+    if (line.canDeleteLine()) {
+      line.deleteButton.addEventListener('click', () => { this.showDeleteModal(data, parentData, structure) });
     }
 
     if (sortZone) {
       sortZone.addChild(line);
     }
 
-    if (canEdit) {
-      line.element.onclick = () =>
+    if (line.canEditLine()) {
+      line.element.addEventListener('click', (event: any) =>
       {
-        this.onEditLine(data, parentData, structure, true);
-      }
+        const targetIsLine = () =>
+        {
+          return event.target === line.element || event.target.parentElement === line.element;
+        }
+
+        if (targetIsLine()) {
+          this.onEditLine(data, parentData, structure, false)
+        }
+      });
     }
 
     return line;
@@ -264,10 +257,8 @@ export class Tree extends Component<{
     sortZone: TreeSortZone
   ): TreeLine
   {
-    const canAddFunction = structure.getCanAddFunction();
-    const canAddLine = canAddFunction !== undefined ? canAddFunction(parentData) : null;
-    const canAdd = canAddLine !== null ? canAddLine && structure.getCanAdd() : structure.getCanAdd();
-    if (this.canAdd() && canAdd) {
+
+    if (this.canAdd() && this.canAddLine(structure, parentData)) {
       iterator.count++;
 
       const addLineText = structure.getAddLineText(), text = addLineText ? addLineText : 'Add line +';
@@ -276,7 +267,7 @@ export class Tree extends Component<{
       line.element.addEventListener('click', () =>
       {
         const containerData = sortZone ? sortZone.data : this.data;
-        this.onEditLine(containerData, sortZone.data, structure, false);
+        this.onEditLine(containerData, sortZone.data, structure, true);
       });
 
       return line;
@@ -285,22 +276,27 @@ export class Tree extends Component<{
     return null;
   }
 
-  protected onEditLine(data: DataNode, parentData: DataNode, structure: Structure, isEditing: boolean): void
+  protected canAddLine(structure: Structure, parentData: DataNode): boolean
+  {
+    const canAddFunction = structure.getCanAddFunction();
+    const canAddLine = canAddFunction !== undefined ? canAddFunction(parentData) : null;
+    return canAddLine !== null ? canAddLine && structure.getCanAdd() : structure.getCanAdd();
+  }
+
+  protected onEditLine(data: DataNode, parentData: DataNode, structure: Structure, isNew: boolean): void
   {
     if (structure.getUseModalEdit()) {
-      this.showModal(data, parentData, structure, isEditing);
+      this.showEditModal(data, parentData, structure, isNew);
     }
   }
 
-  protected showModal(data: DataNode, parentData: DataNode, structure: Structure, isEditing: boolean): void
+  protected showEditModal(data: DataNode, parentData: DataNode, structure: Structure, isNew: boolean): void
   {
-    const model = Object.assign({}, this.createModel(data, structure, isEditing));
-    const parentModel = Object.assign({}, this.createModel(parentData, structure, isEditing));
-    console.log(model);
+    const model = this.createModel(data, structure, isNew);
     const form = new TreeForm({
       model,
       onCancel: () => { this.modal.hide() },
-      onSubmit: async () => this.onModalSubmit(data, parentData, model, structure, isEditing)
+      onSubmit: async () => this.onModalEditSubmit(data, parentData, model, structure, isNew)
     });
 
     this.modal.setState({ content: form });
@@ -308,68 +304,181 @@ export class Tree extends Component<{
     this.modal.show();
   }
 
-  protected async onModalSubmit(
+  protected showDeleteModal(data: DataNode, parentData: DataNode, structure: Structure): void
+  {
+    const title = this.createElement('h4', 'Are you sure?', { className: 'col-12 text-center' });
+    const dismissButton = this.createElement('div', 'Cancel', { className: 'btn btn-default' });
+    const confirmButton = this.createElement('div', 'Confirm', { className: 'btn btn-danger' });
+
+    dismissButton.addEventListener('click', () =>
+    {
+      this.modal.hide();
+    });
+
+    confirmButton.addEventListener('click', () =>
+    {
+      this.onModalDeleteSubmit(data, parentData, structure);
+    });
+
+    const leftWrapper = this.createElement('div', dismissButton, { className: 'col-6 text-left' });
+    const rightWrapper = this.createElement('div', confirmButton, { className: 'col-6 text-right' });
+
+    const content = this.createElement('div', [leftWrapper, rightWrapper], { className: 'row' });
+
+    this.modal.setState({ content, title });
+
+    this.modal.show();
+  }
+
+  protected async onModalEditSubmit(
     data: DataNode,
     parentData: DataNode,
     model: FormModel,
     structure: Structure,
-    isEditing: boolean
+    isNew: boolean
   ): Promise<void>
   {
+    const editUrl = structure.getEditUrl();
+    const addUrl = structure.getAddUrl();
     const onLineEditSubmit = this.events.onLineEditSubmit;
     const onLineAddSubmit = this.events.onLineAddSubmit;
-    const parentModel = this.createModel(parentData, structure, isEditing);
     const structureType = structure.getStructureType();
-    console.log(parentModel);
-    let result: LineSubmitResult = { model: {}, response: null };
+    let result: LineSubmitResult = { item: null, response: null };
     let shouldSort = false;
-    if (isEditing && isFunction(onLineEditSubmit)) {
-      result = await onLineEditSubmit(model, structureType.name, parentModel);
-    } else if (isFunction(onLineAddSubmit)) {
-      result = await onLineAddSubmit(model, structureType.name, parentModel);
-      shouldSort = true;
+    const itemValues = this.getModelValues(model);
+    const postBody = { values: itemValues, parent: parentData.item, name: structureType.name };
+    if (isNew) {
+      if (addUrl) {
+        result = await fetchPost(addUrl, postBody) as LineSubmitResult;
+      }
+      else if (isFunction(onLineAddSubmit)) {
+        result = await onLineAddSubmit(itemValues, parentData.item, structureType.name);
+        shouldSort = true;
+      }
+    }
+    else {
+      if (editUrl) {
+        result = await fetchPost(editUrl, postBody) as LineSubmitResult;
+      }
+      else if (isFunction(onLineEditSubmit)) {
+        result = await onLineEditSubmit(itemValues, parentData.item, structureType.name);
+      }
     }
 
     if (result.response && result.response.status === true) {
       this.modal.hide();
-      console.log(result.model);
-      const item = objectMap(result.model, (attribute: FormAttribute) =>
-      {
-        return attribute.value;
-      });
 
-      if (!isEditing) {
-        if (!data.children) {
-          data.children = [];
+      if (result.response.data) {
+        this.state.data = result.response.data;
+      } else if (result.item) {
+        const item = result.item;
+        if (isNew) {
+          if (!parentData.children) {
+            parentData.children = [];
+          }
+
+          parentData.children.push({ item });
+        } else {
+          data.item = item;
         }
-
-        data.children.push({ item });
-      } else {
-        data.item = item;
       }
 
       this.setState({ data: this.state.data, shouldSortZone: { shouldSort, parentData } });
     }
   }
 
-  private createModel(data: DataNode, structure: Structure, isEditing: boolean): FormModel
+  protected async onModalDeleteSubmit(data: DataNode, parentData: DataNode, structure: Structure): Promise<void>
   {
-    const structureItems = Object.assign({}, structure.getItems());
-    const localData = Object.assign({}, data);
+    const deleteUrl = structure.getDeleteUrl();
+    const structureType = structure.getStructureType();
+    const onLineDeleteSubmit = this.events.onLineDeleteSubmit;
+    let result: LineSubmitResult = { item: null, response: null };
+    let shouldSort = false;
+    if (deleteUrl) {
+      const response = await fetch(deleteUrl);
+      result = await response.json();
+    }
+    else if (isFunction(onLineDeleteSubmit)) {
+      result = await onLineDeleteSubmit(data.item, parentData.item, structureType.name);
+      shouldSort = true;
+    }
+
+    if (result.response && result.response.status === true) {
+      this.modal.hide();
+
+      if (result.response.data) {
+        this.state.data = result.response.data;
+      } else if (result.item) {
+        parentData.children = parentData.children.filter((value) =>
+        {
+          if (value === data) {
+            return false;
+          }
+
+          return true;
+        });
+      }
+
+      this.setState({ data: this.state.data, shouldSortZone: { shouldSort, parentData } });
+    }
+  }
+
+  private getModelValues(model: FormModel): DataNode
+  {
+    const newModel = Object.assign({}, model);
+    const data: DataNode = objectMap(newModel, (attribute: FormAttribute) =>
+    {
+      return attribute['value'];
+    });
+
+    return data;
+  }
+
+  private createModel(data: DataNode, structure: Structure, isNew: boolean): FormModel
+  {
+    const structureItems = structure.getItems();
     const model = objectMap(structureItems, (item: FormAttribute) =>
     {
-      if (isEditing) {
-        const key = item.name;
+      const attribute = Object.assign({}, item);
+      const key = attribute.name;
 
-        if (key in localData.item) {
-          item.value = localData.item[key];
+      if (!isNew) {
+        const dataItem = data.item;
+        if (dataItem.hasOwnProperty(key)) {
+          attribute.value = dataItem[key];
         }
       }
 
-      return item;
+      return attribute;
     });
 
-    return Object.assign({}, model);
+    return model;
+  }
+
+  private initStructures(): void
+  {
+    this._structures = objectMap(this.structures, (structureType: StructureType) =>
+    {
+      const structure = new Structure(structureType);
+
+      if (structure.getCanEdit() === undefined) {
+        structure.setCanEdit(this.canEdit());
+      }
+
+      if (structure.getCanAdd() === undefined) {
+        structure.setCanAdd(this.canAdd());
+      }
+
+      if (structure.getCanDelete() === undefined) {
+        structure.setCanDelete(this.canDelete());
+      }
+
+      return structure;
+    });
+
+    if (this._structures) {
+      this.structureKeys = Object.keys(this._structures);
+    }
   }
 
   protected setDefaultProps(): void
@@ -377,14 +486,14 @@ export class Tree extends Component<{
     super.setDefaultProps();
 
     this.data = [];
-    this.structure = {};
+    this.structures = {};
     this.config = {};
 
     this.events = {};
     this.events.onLineClick = () => { };
     this.events.onLineMove = () => { };
-    this.events.onLineAddSubmit = (model: FormModel) => { return { model, response: null } };
-    this.events.onLineEditSubmit = (model: FormModel) => { return { model, response: null } };
+    this.events.onLineAddSubmit = (item: DataNodeItem) => { return { item, response: null } };
+    this.events.onLineEditSubmit = (item: DataNodeItem) => { return { item, response: null } };
   }
 }
 
@@ -401,9 +510,14 @@ export type TreeEvents = {
    * Fires when line edit was submited
    */
   onLineEditSubmit?: OnLineSubmitEvent;
+
+  /**
+   * Fires when line delete was submited
+   */
+  onLineDeleteSubmit?: OnLineSubmitEvent;
 };
 
-export type OnLineSubmitEvent = (model: FormModel, name: string, parentModel: FormModel) => LineSubmitResult;
+export type OnLineSubmitEvent = (item: DataNodeItem, parentItem: DataNodeItem, name: string) => LineSubmitResult;
 
 export type OnLineMoveEvent = (moveData: OnLineMoveData, item: HTMLElement) => void;
 
@@ -412,29 +526,36 @@ export type TreeConfig = {
   /**
    * Can edit lines
    */
-  canEdit?: boolean;
-  
+  readonly canEdit?: boolean;
+
   /**
    * Can add lines
    */
-  canAdd?: boolean;
-  
+  readonly canAdd?: boolean;
+
+  /**
+   * Can delete lines
+   */
+  readonly canDelete?: boolean;
+
   /**
    * How much each branch should be offseted
    */
-  offset?: number;
+  readonly offset?: number;
 };
 
 export type DataNode = {
-  [key: string]: any;
-  item: { [name: string]: string };
+  [name: string]: any;
+  item: DataNodeItem;
   children?: Array<DataNode>;
 };
 
-export type LineSubmitResult = { model: FormModel; response: Response; }; 
+export type DataNodeItem = { [name: string]: string };
+
+export type LineSubmitResult = { item: DataNodeItem; response: Response; };
 
 export type Response = {
-  status: boolean;
-  message: string;
-  data: Array<DataNode>;
+  readonly status: boolean;
+  readonly message: string;
+  readonly data: Array<DataNode>;
 };

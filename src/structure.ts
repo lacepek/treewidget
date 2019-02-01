@@ -5,7 +5,7 @@ export class Structure
 {
   public hasBeenSorted: boolean = false;
 
-  private structure: StructureType = null;
+  private readonly structure: StructureType = null;
 
   public constructor(structure: StructureType)
   {
@@ -66,6 +66,16 @@ export class Structure
     this.getConfig().canAdd = canAdd;
   }
 
+  public getCanDelete(): boolean
+  {
+    return this.getConfig().canDelete;
+  }
+
+  public setCanDelete(canDelete: boolean): void
+  {
+    this.getConfig().canDelete = canDelete;
+  }
+
   public getUseModalEdit(): boolean
   {
     return this.getConfig().useModalEdit;
@@ -105,33 +115,53 @@ export class Structure
   {
     return this.getConfig().useModalEditFunction;
   }
+
+  public getEditUrl(): string
+  {
+    return this.getConfig().editUrl;
+  }
+
+  public getAddUrl(): string
+  {
+    return this.getConfig().addUrl;
+  }
+
+  public getDeleteUrl(): string
+  {
+    return this.getConfig().deleteUrl;
+  }
+
+  public getMoveLineUrl(): string
+  {
+    return this.getConfig().moveLineUrl;
+  }
 }
 
 export type StructureType = {
   /**
    * Name of tree branch
    */
-  name: string;
+  readonly name: string;
 
   /**
    * Parent tree branch
    */
-  parent: string | null;
+  readonly parent: string | null;
 
   /**
    * Visible name of tree branch
    */
-  label?: string;
-
+  readonly label?: string;
+  
+  /**
+   * Structure of items displayed
+   */
+  readonly items?: { [name: string]: FormAttribute };
+  
   /**
    * Other level options
    */
   config?: StructureConfig;
-
-  /**
-   * Structure of items displayed
-   */
-  items?: { [name: string]: FormAttribute };
 }
 
 export type StructureConfig = {
@@ -146,32 +176,57 @@ export type StructureConfig = {
   canAdd?: boolean;
 
   /**
+   * Is it possible to delete lines on this level
+   */
+  canDelete?: boolean;
+
+  /**
    * Show modal for line editing
    */
-  useModalEdit?: boolean;
+  readonly useModalEdit?: boolean;
 
   /**
    * Text of add line
    */
-  addLineText?: string;
+  readonly addLineText?: string;
 
   /**
    * Can lines on this level be manually sorted
    */
-  isSortable?: boolean;
+  readonly isSortable?: boolean;
 
   /**
    * Custom sorting function, sorts once when the tree is initialized or when new line is added
    */
-  sortFunction?: CompareCallback;
+  readonly sortFunction?: CompareCallback;
 
-  canEditFunction?: EditCallback;
+  /**
+   * Custom function for deciding which lines can be edited
+   */
+  readonly canEditFunction?: EditCallback;
 
-  isSortableFunction?: EditCallback;
+  /**
+   * Custom function for deciding which lines can be sorted
+   */
+  readonly isSortableFunction?: EditCallback;
 
-  canAddFunction?: EditCallback;
+  /**
+   * Custom function for deciding where can lines be added
+   */
+  readonly canAddFunction?: EditCallback;
 
-  useModalEditFunction?: EditCallback;
+  /**
+   * Custom function for deciding which lines can be edited in modal window
+   */
+  readonly useModalEditFunction?: EditCallback;
+
+  readonly editUrl?: string;
+
+  readonly addUrl?: string;
+
+  readonly deleteUrl?: string;
+
+  readonly moveLineUrl?: string;
 }
 
 export type CompareCallback = (dataA: DataNode, dataB: DataNode) => number;

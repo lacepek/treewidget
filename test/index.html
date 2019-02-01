@@ -14,7 +14,7 @@
     <script src="../dist/treewidget.js"></script>
 
     <script>
-        var structure = {
+        var structures = {
             'oblast': {
                 'name': 'oblast',
                 'label': 'oblast',
@@ -48,6 +48,9 @@
                 'label': 'otázka',
                 'parent': 'kategorie',
                 'config': {
+                    'moveLineUrl': 'http://localhost:3000/api/move',
+                    'deleteUrl': 'http://localhost:3000/api/delete',
+                    'addUrl': 'http://localhost:3000/api/add',
                     'addLineText': 'Přidat otázku',
                     'useModalEdit': true,
                     'isSortable': true,
@@ -69,30 +72,6 @@
 
                         return 0;
                     },
-                    'canEditFunction': (data) => {
-                        if (data.item.druh && data.item.druh !== 'text')
-                        {
-                            return false;
-                        }
-
-                        return true;
-                    },
-                    'canAddFunction': (data) => {
-                        if (data.children)
-                        {
-                            const count = data.children.length;
-                            return count < 4;
-                        }
-
-                        return false;
-                    },
-                    'isSortableFunction': (data) => {
-                        if (data.item.druh && data.item.druh !== 'text')
-                        {
-                            return true;
-                        }
-                        return false;
-                    }
                 },
                 'items': {
                     'pk': { 'name': 'pk', 'type': 'text', 'isHidden': true },
@@ -101,7 +80,7 @@
                         'name': 'druh',
                         'type': 'select',
                         'label': 'Druh otázky',
-                        'defaultValue': 'skala',
+                        'value': 'skala',
                         'options': {
                             'skala': { 'key': 'skala', 'value': 'Otazka na skale' },
                             'text': { 'key': 'text', 'value': 'Volny text' }
@@ -111,6 +90,7 @@
                         'name': 'dulezitost',
                         'type': 'select',
                         'label': 'Dulezitost',
+                        'value': 'ano',
                         'options': {
                             'ano': { 'key': 'ano', 'value': 'Ano' },
                             'ne': { 'key': 'ne', 'value': 'Ne' }
@@ -120,9 +100,9 @@
             }
         };
 
-        createTreeWidget(structure);
+        createTreeWidget(structures);
 
-        async function createTreeWidget(structure) {
+        async function createTreeWidget(structures) {
             const apiUrl = 'http://localhost:3000/treedata';
             const request = new Request(apiUrl);
             const response = await (await fetch(request)).json();
@@ -130,25 +110,46 @@
             TreeWidget.create({
                 parentSelector: '#tree-widget-wrapper',
                 data: response.data,
-                structure: structure,
+                structures: structures,
                 config: {
                     canEdit: true,
                     canAdd: true,
-                    offset: 50
+                    canDelete: true,
                 }
             });
 
-            const onLineEdit = async (model, name, parentModel) => {
+            const onLineEdit = async (item, parentData, name) => {
                 const response = await fetch(request);
-                return { model, response: await response.json() };
+                const json = await response.json();
+                console.log(item);
+
+                json.data = null;
+
+                return { item, response: json};
             };
-            const onLineAdd = async (model, name, parentModel) => {
+            const onLineAdd = async (item, parentData, name) => {
                 const response = await fetch(request);
-                return { model, response: await response.json() };
+                const json = await response.json();
+
+                json.data = null;
+                console.log(json);
+
+                return { item, response: json};
+            };
+
+            const onLineDelete = async (item, parentData, name) => {
+                const response = await fetch(request);
+                const json = await response.json();
+
+                json.data = null;
+                console.log(json);
+
+                return { item, response: json};
             };
 
             TreeWidget.setOnLineEditSubmit(onLineEdit);
             TreeWidget.setOnLineAddSubmit(onLineAdd);
+            TreeWidget.setOnLineDeleteSubmit(onLineDelete);
         };
     </script>
 </body>

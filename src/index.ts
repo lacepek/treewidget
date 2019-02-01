@@ -1,5 +1,5 @@
 import TreeWidget from './treeWidget';
-import './styles/modal.css';
+import './base/styles/modal.css';
 import './styles/tree.css';
 import { OnLineSubmitEvent, OnLineMoveEvent } from './tree';
 import { StructureType } from './structure';
@@ -17,6 +17,11 @@ export function setOnLineEditSubmit(onLineEditSubmit: OnLineSubmitEvent): void
 export function setOnLineAddSubmit(onLineAddSubmit: OnLineSubmitEvent): void
 {
   TreeWidget.setOnLineAddSubmit(onLineAddSubmit);
+}
+
+export function setOnLineDeleteSubmit(onLineDeleteSubmit: OnLineSubmitEvent): void
+{
+  TreeWidget.setOnLineDeleteSubmit(onLineDeleteSubmit);
 }
 
 export function setOnLineMove(onLineMove: OnLineMoveEvent): void
