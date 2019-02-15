@@ -7,7 +7,7 @@ import objectMap from './base/utility/objectMap';
 import { TreeSortZone } from './treeSortZone';
 import { Structure, StructureType } from './structure';
 import isFunction from './base/utility/isFunction';
-import fetchPost from './fetchPost';
+import { fetchPost } from './fetch';
 
 /**
  * Main component of TreeWidget, renders tree-like structures from data with options to edit, add and rearrange lines,
@@ -61,6 +61,21 @@ export class Tree extends Component<{
   public getOffset(): number
   {
     return this.config.offset;
+  }
+
+  public getAuthToken(): string
+  {
+    return this.config.authToken;
+  }
+
+  public getAuthData(): object
+  {
+    return this.config.authData;
+  }
+
+  public getLanguage(): string
+  {
+    return this.config.language;
   }
 
   public clearContent(): void
@@ -347,21 +362,23 @@ export class Tree extends Component<{
     let shouldSort = false;
     const itemValues = this.getModelValues(model);
     const postBody = { values: itemValues, parent: parentData.item, name: structureType.name };
+
+    const authToken = this.getAuthToken(), authData = this.getAuthData(), language = this.getLanguage();
     if (isNew) {
       if (addUrl) {
-        result = await fetchPost(addUrl, postBody) as LineSubmitResult;
+        result = await fetchPost(addUrl, postBody, authToken, authData, language) as LineSubmitResult;
       }
       else if (isFunction(onLineAddSubmit)) {
-        result = await onLineAddSubmit(itemValues, parentData.item, structureType.name);
+        result = await onLineAddSubmit(postBody.values, postBody.parent, postBody.name);
         shouldSort = true;
       }
     }
     else {
       if (editUrl) {
-        result = await fetchPost(editUrl, postBody) as LineSubmitResult;
+        result = await fetchPost(addUrl, postBody, authToken, authData, language) as LineSubmitResult;
       }
       else if (isFunction(onLineEditSubmit)) {
-        result = await onLineEditSubmit(itemValues, parentData.item, structureType.name);
+        result = await onLineEditSubmit(postBody.values, postBody.parent, postBody.name);
       }
     }
 
@@ -394,12 +411,13 @@ export class Tree extends Component<{
     const onLineDeleteSubmit = this.events.onLineDeleteSubmit;
     let result: LineSubmitResult = { item: null, response: null };
     let shouldSort = false;
+    const authToken = this.getAuthToken(), authData = this.getAuthData(), language = this.getLanguage();
+    const postBody = { values: data.item, parent: parentData.item, name: structureType.name };
     if (deleteUrl) {
-      const response = await fetch(deleteUrl);
-      result = await response.json();
+      result = await fetchPost(deleteUrl, postBody, authToken, authData, language) as LineSubmitResult;
     }
     else if (isFunction(onLineDeleteSubmit)) {
-      result = await onLineDeleteSubmit(data.item, parentData.item, structureType.name);
+      result = await onLineDeleteSubmit(postBody.values, postBody.parent, postBody.name);
       shouldSort = true;
     }
 
@@ -487,7 +505,7 @@ export class Tree extends Component<{
 
     this.data = [];
     this.structures = {};
-    this.config = {};
+    this.config = { authToken: '', authData: {}, language: 'en' };
 
     this.events = {};
     this.events.onLineClick = () => { };
@@ -542,6 +560,12 @@ export type TreeConfig = {
    * How much each branch should be offseted
    */
   readonly offset?: number;
+
+  readonly authToken: string;
+
+  readonly authData: object;
+
+  readonly language: string;
 };
 
 export type DataNode = {

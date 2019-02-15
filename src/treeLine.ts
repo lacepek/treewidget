@@ -4,6 +4,7 @@ import { ElementUtility } from './base/utility/elementUtility';
 import { Structure } from './structure';
 import { FormAttribute } from './base/forms/interfaces/formModel';
 import isFunction from './base/utility/isFunction';
+import { fetchPost } from './fetch';
 
 export class TreeLine extends Sortable
 {
@@ -31,14 +32,17 @@ export class TreeLine extends Sortable
     }
     const onLineMove = this.events.onLineMove;
     const moveLineUrl = this.structure.getMoveLineUrl();
+    const moveData = {
+      ...sortData,
+      ...{ name: this.structure.getName(), canDrag: this.canDragLine(), item: this.data.item }
+    };
     if (moveLineUrl) {
-      fetch(moveLineUrl);
+      const authToken = this.treeConfig.authToken;
+      const authData = this.treeConfig.authData;
+      const language = this.treeConfig.language;
+      fetchPost(moveLineUrl, moveData, authToken, authData, language);
     }
     else if (isFunction(onLineMove)) {
-      const moveData = {
-        ...sortData,
-        ...{ name: this.structure.getName(), canDrag: this.canDragLine(), item: this.data.item }
-      };
       this.events.onLineMove(moveData, this.element);
     }
   }

@@ -19,7 +19,9 @@
 	},
 	"author": "Ladislav Čepek",
 	"license": "ISC",
-	"dependencies": {},
+	"dependencies": {
+		"react-request": "git+ssh://git@gitlab.com/TCCOnline/react-request.git#master"
+	},
 	"devDependencies": {
 		"clean-css-loader": "^1.1.0",
 		"css-loader": "^2.1.0",
