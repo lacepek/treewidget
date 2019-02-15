@@ -8,7 +8,7 @@ export async function fetchPost(
   language: string
 ): Promise<{}>
 {
-  const response = await RequestApi.post(url, body, authToken, authData, language);
+  const response = await RequestApi.post(url, authToken, language, authData, body);
 
   return await response.json();
 }
