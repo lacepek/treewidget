@@ -1,4 +1,4 @@
-import RequestApi from 'react-request';
+import { RequestApi } from 'react-request'
 
 export async function fetchPost(
   url: string,
@@ -9,17 +9,6 @@ export async function fetchPost(
 ): Promise<{}>
 {
   const response = await RequestApi.post(url, authToken, language, authData, body);
-
-  return await response.json();
-}
-
-export async function fetchDelete(
-  url: string,
-  authToken: string,
-  language: string
-): Promise<{}>
-{
-  const response = await RequestApi.delete(url, authToken, language);
 
   return await response.json();
 }

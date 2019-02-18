@@ -7,16 +7,13 @@
         "noImplicitThis": true,
         "noUnusedLocals": false,
         "sourceMap": true,
-        "module": "es6",
+        "module": "commonjs",
         "target": "es5",
-        "declaration": true,
-        "declarationDir": "../declaration",
-        "declarationMap": true,
         "lib": [
-			"es6",
-			"dom",
-			"es2015"
-		],
+            "es6",
+            "dom",
+            "es2015"
+        ],
     },
     "include": [
         "src/**/*"
