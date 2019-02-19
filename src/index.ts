@@ -1,35 +1,65 @@
-import TreeWidget from './treeWidget';
+import TreeWidget, { Config } from './treeWidget';
 import './base/styles/modal.css';
 import './styles/tree.css';
 import { OnLineSubmitEvent, OnLineMoveEvent } from './tree';
 import { StructureType } from './structure';
 
-export function create(config: object)
+/**
+ * Vytvoří widget
+ * 
+ * @param config
+ */
+export const create = (config: Config): void =>
 {
   TreeWidget.create(config);
 }
 
-export function setOnLineEditSubmit(onLineEditSubmit: OnLineSubmitEvent): void
+/**
+ * Zaregistruje event callback editace řádku
+ * 
+ * @param onLineEditSubmit 
+ */
+export const setOnLineEditSubmit = (onLineEditSubmit: OnLineSubmitEvent): void =>
 {
   TreeWidget.setOnLineEditSubmit(onLineEditSubmit);
 }
 
-export function setOnLineAddSubmit(onLineAddSubmit: OnLineSubmitEvent): void
+/**
+ * Zaregistruje event callback přidání řádku
+ * 
+ * @param onLineAddSubmit 
+ */
+export const setOnLineAddSubmit = (onLineAddSubmit: OnLineSubmitEvent): void =>
 {
   TreeWidget.setOnLineAddSubmit(onLineAddSubmit);
 }
 
-export function setOnLineDeleteSubmit(onLineDeleteSubmit: OnLineSubmitEvent): void
+/**
+ * Zaregistruje event callback smazání řádku
+ * 
+ * @param onLineDeleteSubmit 
+ */
+export const setOnLineDeleteSubmit = (onLineDeleteSubmit: OnLineSubmitEvent): void =>
 {
   TreeWidget.setOnLineDeleteSubmit(onLineDeleteSubmit);
 }
 
-export function setOnLineMove(onLineMove: OnLineMoveEvent): void
+/**
+ * Zaregistruje event callback posunu řádku
+ * 
+ * @param onLineMove 
+ */
+export const setOnLineMove = (onLineMove: OnLineMoveEvent): void =>
 {
   TreeWidget.setOnLineMove(onLineMove);
 }
 
-export function setStructure(structure: { [name: string]: StructureType }): void
+/**
+ * Nastaví strukturu stromu
+ * 
+ * @param structure 
+ */
+export const setStructure = (structure: { [name: string]: StructureType }): void =>
 {
   TreeWidget.setStructure(structure);
 }
