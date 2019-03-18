@@ -1,6 +1,7 @@
 import { Draggable } from '../draggable';
 import { Container, ContainerChild } from './container';
 import { Component } from '../component';
+import { IComponentConfig } from 'component-base';
 
 export class DropZone extends Container<{}>
 {
@@ -9,6 +10,11 @@ export class DropZone extends Container<{}>
   public root: Component<{}>;
 
   private hasRegisteredEvents: boolean = false;
+
+  public constructor(config: IDropZoneConfig)
+  {
+    super(config);
+  }
 
   public setCurrent(draggable: Draggable): void
   {
@@ -75,4 +81,11 @@ export class DropZone extends Container<{}>
     this.current = null;
     this.canDrop = true;
   }
+}
+
+export interface IDropZoneConfig extends IComponentConfig<{}>
+{
+  canDrop: boolean;
+  current?: ContainerChild<{}>;
+  root?: Component<{}>;
 }

@@ -1,12 +1,18 @@
-import SortZone from "./base/containers/sortzone";
-import { TreeLine } from "./treeLine";
-import { ContainerChild } from "./base/containers/container";
-import { FormModel } from "./base/forms/interfaces/formModel";
+import SortZone from './base/containers/sortzone';
+import { TreeLine } from './treeLine';
+import { ContainerChild } from './base/containers/container';
+import { FormModel } from './base/forms/interfaces/formModel';
+import { IDropZoneConfig } from './base/containers/dropzone';
 
 export class TreeSortZone extends SortZone
 {
   public data: any;
   public model: FormModel;
+
+  public constructor(config: ITreeSortZoneConfig)
+  {
+    super(config);
+  }
 
   public onDrop(event: Event, target: HTMLElement): void
   {
@@ -15,7 +21,7 @@ export class TreeSortZone extends SortZone
     }
 
     const dragged = this.current.component.element;
-    // if dragged is target do nothing 
+    // if dragged is target do nothing
     if (dragged === target) {
       return;
     }
@@ -80,4 +86,10 @@ export class TreeSortZone extends SortZone
 
     return false;
   }
+}
+
+export interface ITreeSortZoneConfig extends IDropZoneConfig
+{
+  data: any;
+  model?: FormModel;
 }

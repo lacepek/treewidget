@@ -1,4 +1,4 @@
-import { Component } from '../component';
+import { Component } from 'component-base';
 
 export class Container<T> extends Component<T>
 {

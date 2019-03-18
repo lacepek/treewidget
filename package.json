@@ -1,40 +1,51 @@
 {
-	"name": "treewidget-plugin",
-	"version": "2.0.0",
-	"description": "Typescript customizable tree widget plugin",
-	"licenses": [
-		{
-			"type": "MIT",
-			"url": "https://www.opensource.org/licenses/mit-license.php"
-		}
-	],
-	"main": "index.js",
-	"scripts": {
-		"start": "webpack --display-error-details -w --config webpack.dev.js",
-		"start:server": "webpack-dev-server --display-error-details --hot --config webpack.dev.js",
-		"build:dev": "webpack --display-error-details --config webpack.dev.js",
-		"build:prod": "webpack --config webpack.prod.js",
-		"docs": "typedoc --readme ./README.md --out ./docs --mode modules && touch ./docs/.nojekyll",
-		"build": "npm run build:dev && npm run build:prod",
-		"update": "npm i && npm update"
-	},
-	"author": "Ladislav Čepek",
-	"license": "ISC",
-	"dependencies": {
-		"react-request": "git+ssh://git@gitlab.com/TCCOnline/react-request.git#master"
-	},
-	"devDependencies": {
-		"clean-css-loader": "^1.1.0",
-		"css-loader": "^2.1.0",
-		"cssnano": "^4.1.8",
-		"optimize-css-assets-webpack-plugin": "^5.0.1",
-		"optimize-js-plugin": "0.0.4",
-		"style-loader": "^0.23.1",
-		"ts-loader": "^4.5.0",
-		"typescript": "^3.2.2",
-		"uglifyjs-webpack-plugin": "^1.3.0",
-		"webpack": "^4.28.3",
-		"webpack-cli": "^3.2.1",
-		"webpack-dev-server": "^3.1.14"
-	}
+  "name": "treewidget-plugin",
+  "version": "2.0.0",
+  "description": "Typescript customizable tree widget plugin",
+  "licenses": [
+    {
+      "type": "MIT",
+      "url": "https://www.opensource.org/licenses/mit-license.php"
+    }
+  ],
+  "main": "index.js",
+  "scripts": {
+    "start": "webpack --display-error-details -w --config webpack.dev.js",
+    "start:server": "webpack-dev-server --display-error-details --hot --config webpack.dev.js",
+    "build:dev": "webpack --display-error-details --config webpack.dev.js",
+    "build:prod": "webpack --config webpack.prod.js",
+    "docs": "typedoc --readme ./README.md --out ./docs --mode modules && touch ./docs/.nojekyll",
+    "build": "npm run build:dev && npm run build:prod",
+    "update": "npm i && npm update",
+    "test": "jest --forceExit --coverage --verbose"
+  },
+  "author": "Ladislav Čepek",
+  "license": "ISC",
+  "dependencies": {
+    "component-base": "git+ssh://git@gitlab.com/TCCOnline/component-base.git#v1.1.1",
+    "react-form": "git+ssh://git@gitlab.com/TCCOnline/react-form.git#master",
+    "react-request": "git+ssh://git@gitlab.com/TCCOnline/react-request.git#master"
+  },
+  "devDependencies": {
+    "@types/jest": "^22.1.3",
+    "@types/supertest": "^2.0.4",
+    "chai": "^4.1.2",
+    "jest": "^22.0.4",
+    "supertest": "^3.0.0",
+    "ts-jest": "^22.0.4",
+    "ts-node": "^5.0.0",
+    "tslint": "^5.9.1",
+    "clean-css-loader": "^1.1.0",
+    "css-loader": "^2.1.0",
+    "cssnano": "^4.1.8",
+    "optimize-css-assets-webpack-plugin": "^5.0.1",
+    "optimize-js-plugin": "0.0.4",
+    "style-loader": "^0.23.1",
+    "ts-loader": "^4.5.0",
+    "typescript": "^3.2.2",
+    "uglifyjs-webpack-plugin": "^1.3.0",
+    "webpack": "^4.28.3",
+    "webpack-cli": "^3.2.1",
+    "webpack-dev-server": "^3.1.14"
+  }
 }

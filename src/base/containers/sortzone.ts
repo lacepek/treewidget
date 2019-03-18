@@ -8,10 +8,10 @@ export default class SortZone extends SwapZone
     if (!this.current) {
       return;
     }
-    
+
     const dragged = this.current.component.element;
 
-    // if dragged is target do nothing 
+    // if dragged is target do nothing
     if (dragged === target) {
       return;
     }
@@ -24,11 +24,11 @@ export default class SortZone extends SwapZone
 
       // if current is higher then the target put it after, otherwise put it before the target
       if (currentIndex > targetIndex) {
-        this.element.insertBefore(dragged, target)
+        this.element.insertBefore(dragged, target);
       } else {
         const nextSibling = target.nextElementSibling;
         if (nextSibling) {
-          this.element.insertBefore(dragged, nextSibling)
+          this.element.insertBefore(dragged, nextSibling);
         } else {
           this.element.appendChild(dragged);
         }

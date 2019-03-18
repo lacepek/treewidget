@@ -1,23 +1,23 @@
-import { Component } from './base/component';
+import { Component } from 'component-base';
 import { TreeLine, LineData, OnLineMoveData } from './treeLine';
 import { Modal } from './base/modal';
-import { TreeForm } from './treeForm';
+import TreeForm from './treeForm';
 import { FormModel, FormAttribute } from './base/forms/interfaces/formModel';
 import objectMap from './base/utility/objectMap';
 import { TreeSortZone } from './treeSortZone';
 import { Structure, StructureType } from './structure';
 import isFunction from './base/utility/isFunction';
 import { fetchPost } from './fetch';
+import { IFormModel } from 'react-form';
 
 /**
  * Main component of TreeWidget, renders tree-like structures from data with options to edit, add and rearrange lines,
  * with ability to hook function callbacks to these events
  */
 export class Tree extends Component<{
-  data: Array<DataNode>,
-  shouldSortZone?: { shouldSort: boolean, parentData: DataNode }
-}>
-{
+  data: Array<DataNode>;
+  shouldSortZone?: { shouldSort: boolean; parentData: DataNode };
+}> {
   /**
    * Data to be displayed
    */
@@ -43,50 +43,41 @@ export class Tree extends Component<{
   private structureKeys: string[];
   private _structures: { [name: string]: Structure };
 
-  public canEdit(): boolean
-  {
+  public canEdit(): boolean {
     return this.config.canEdit;
   }
 
-  public canAdd(): boolean
-  {
+  public canAdd(): boolean {
     return this.config.canAdd;
   }
 
-  public canDelete(): boolean
-  {
+  public canDelete(): boolean {
     return this.config.canDelete;
   }
 
-  public getOffset(): number
-  {
+  public getOffset(): number {
     return this.config.offset;
   }
 
-  public getAuthToken(): string
-  {
+  public getAuthToken(): string {
     return this.config.authToken;
   }
 
-  public getAuthData(): object
-  {
+  public getAuthData(): object {
     return this.config.authData;
   }
 
-  public getLanguage(): string
-  {
+  public getLanguage(): string {
     return this.config.language;
   }
 
-  public clearContent(): void
-  {
+  public clearContent(): void {
     super.clearContent();
 
     this.parentElement.removeChild(this.wrapper);
   }
 
-  protected init(): void
-  {
+  protected init(): void {
     super.init();
 
     if (this.data) {
@@ -98,8 +89,7 @@ export class Tree extends Component<{
     this.initStructures();
   }
 
-  protected render(): void
-  {
+  protected render(): void {
     if (!this.state.data) {
       return;
     }
@@ -117,20 +107,19 @@ export class Tree extends Component<{
     this.parentElement.appendChild(this.wrapper);
 
     // Current tree level
-    let level = 0;
+    const level = 0;
     // Holds count of all lines
     const iterator = { count: 0 };
     this.createLines(this.state.data, null, level, iterator, this.element, rootSortZone);
 
     this.modal = new Modal({
-      parentElement: this.element,
+      parentElement: this.element
     });
 
     this.parentElement.appendChild(this.wrapper);
   }
 
-  protected createRootSortZone(): TreeSortZone
-  {
+  protected createRootSortZone(): TreeSortZone {
     const structureKey = this.structureKeys[0];
     const structure = this._structures[structureKey];
     const canDrop = structure.getCanEdit() && structure.getIsSortable();
@@ -139,7 +128,7 @@ export class Tree extends Component<{
       data: { item: null, children: this.state.data },
       canDrop,
       parentElement: this.parentElement,
-      attributes: { className: 'tree-widget-list' },
+      attributes: { className: 'tree-widget-list' }
     });
   }
 
@@ -149,9 +138,8 @@ export class Tree extends Component<{
     level: number,
     iterator: { count: number },
     parent: HTMLElement,
-    sortZone: TreeSortZone,
-  ): void
-  {
+    sortZone: TreeSortZone
+  ): void {
     const structureKey = this.structureKeys[level];
     const structure = this._structures[structureKey];
 
@@ -163,7 +151,7 @@ export class Tree extends Component<{
     const keys = Object.keys(data);
 
     for (let i = 0, n = keys.length; i <= n; i++) {
-      // create add line in edit mode at the end of level      
+      // create add line in edit mode at the end of level
       if (i === n) {
         this.createAddLine(parentData, level, iterator, parent, structure, sortZone);
         break;
@@ -202,8 +190,7 @@ export class Tree extends Component<{
     }
   }
 
-  protected sortLines(structure: Structure, data: Array<DataNode>, parentData: DataNode): void
-  {
+  protected sortLines(structure: Structure, data: Array<DataNode>, parentData: DataNode): void {
     const sortFunction = structure.getSortFunction();
     const shouldSortZone = this.state.shouldSortZone;
     let shouldSort = false;
@@ -225,21 +212,34 @@ export class Tree extends Component<{
     data: DataNode,
     structure: Structure,
     sortZone: TreeSortZone
-  ): TreeLine
-  {
-    const container = sortZone, treeConfig = this.config, events = this.events, parentData = sortZone.data;
+  ): TreeLine {
+    const container = sortZone,
+      treeConfig = this.config,
+      events = this.events,
+      parentData = sortZone.data;
     const lineOptions = {
-      parentElement, data, structure, level, events, container, count, treeConfig
-    }
+      parentElement,
+      data,
+      structure,
+      level,
+      events,
+      container,
+      count,
+      treeConfig
+    };
 
     const line = new TreeLine(lineOptions);
 
     if (line.canDragLine()) {
-      line.events.onLineMoveSuccess = () => { this.setState({ data: this.state.data }) };
+      line.events.onLineMoveSuccess = () => {
+        this.setState({ data: this.state.data });
+      };
     }
 
     if (line.canDeleteLine()) {
-      line.deleteButton.addEventListener('click', () => { this.showDeleteModal(data, parentData, structure) });
+      line.deleteButton.addEventListener('click', () => {
+        this.showDeleteModal(data, parentData, structure);
+      });
     }
 
     if (sortZone) {
@@ -247,15 +247,13 @@ export class Tree extends Component<{
     }
 
     if (line.canEditLine()) {
-      line.element.addEventListener('click', (event: any) =>
-      {
-        const targetIsLine = () =>
-        {
+      line.element.addEventListener('click', (event: any) => {
+        const targetIsLine = () => {
           return event.target === line.element || event.target.parentElement === line.element;
-        }
+        };
 
         if (targetIsLine()) {
-          this.onEditLine(data, parentData, structure, false)
+          this.onEditLine(data, parentData, structure, false);
         }
       });
     }
@@ -270,17 +268,16 @@ export class Tree extends Component<{
     parentElement: HTMLElement,
     structure: Structure,
     sortZone: TreeSortZone
-  ): TreeLine
-  {
-
+  ): TreeLine {
     if (this.canAdd() && this.canAddLine(structure, parentData)) {
       iterator.count++;
 
-      const addLineText = structure.getAddLineText(), text = addLineText ? addLineText : 'Add line +';
-      const attributes = { className: 'tree-line-add' }, count = iterator.count;
+      const addLineText = structure.getAddLineText(),
+        text = addLineText ? addLineText : 'Add line +';
+      const attributes = { className: 'tree-line-add' },
+        count = iterator.count;
       const line = new TreeLine({ parentElement, structure, level, count, text, treeConfig: this.config, attributes });
-      line.element.addEventListener('click', () =>
-      {
+      line.element.addEventListener('click', () => {
         const containerData = sortZone ? sortZone.data : this.data;
         this.onEditLine(containerData, sortZone.data, structure, true);
       });
@@ -291,27 +288,33 @@ export class Tree extends Component<{
     return null;
   }
 
-  protected canAddLine(structure: Structure, parentData: DataNode): boolean
-  {
+  protected canAddLine(structure: Structure, parentData: DataNode): boolean {
     const canAddFunction = structure.getCanAddFunction();
     const canAddLine = canAddFunction !== undefined ? canAddFunction(parentData) : null;
     return canAddLine !== null ? canAddLine && structure.getCanAdd() : structure.getCanAdd();
   }
 
-  protected onEditLine(data: DataNode, parentData: DataNode, structure: Structure, isNew: boolean): void
-  {
+  protected onEditLine(data: DataNode, parentData: DataNode, structure: Structure, isNew: boolean): void {
     if (structure.getUseModalEdit()) {
       this.showEditModal(data, parentData, structure, isNew);
     }
   }
 
-  protected showEditModal(data: DataNode, parentData: DataNode, structure: Structure, isNew: boolean): void
-  {
-    const model = this.createModel(data, structure, isNew);
+  protected showEditModal(data: DataNode, parentData: DataNode, structure: Structure, isNew: boolean): void {
+    const formModel = this.createModel(data, structure, isNew);
     const form = new TreeForm({
-      model,
-      onCancel: () => { this.modal.hide() },
-      onSubmit: async () => this.onModalEditSubmit(data, parentData, model, structure, isNew)
+      model: formModel,
+      onCancel: () => {
+        this.modal.hide();
+      },
+      onSubmit: async (model: IFormModel, isValid: boolean) => {
+        if (!isValid) {
+          console.error('Form is not valid');
+          return;
+        }
+
+        this.onModalEditSubmit(data, parentData, model, structure, isNew);
+      }
     });
 
     this.modal.setState({ content: form });
@@ -319,19 +322,16 @@ export class Tree extends Component<{
     this.modal.show();
   }
 
-  protected showDeleteModal(data: DataNode, parentData: DataNode, structure: Structure): void
-  {
+  protected showDeleteModal(data: DataNode, parentData: DataNode, structure: Structure): void {
     const title = this.createElement('h4', 'Are you sure?', { className: 'col-12 text-center' });
     const dismissButton = this.createElement('div', 'Cancel', { className: 'btn btn-default' });
     const confirmButton = this.createElement('div', 'Confirm', { className: 'btn btn-danger' });
 
-    dismissButton.addEventListener('click', () =>
-    {
+    dismissButton.addEventListener('click', () => {
       this.modal.hide();
     });
 
-    confirmButton.addEventListener('click', () =>
-    {
+    confirmButton.addEventListener('click', () => {
       this.onModalDeleteSubmit(data, parentData, structure);
     });
 
@@ -351,8 +351,7 @@ export class Tree extends Component<{
     model: FormModel,
     structure: Structure,
     isNew: boolean
-  ): Promise<void>
-  {
+  ): Promise<void> {
     const editUrl = structure.getEditUrl();
     const addUrl = structure.getAddUrl();
     const onLineEditSubmit = this.events.onLineEditSubmit;
@@ -363,21 +362,20 @@ export class Tree extends Component<{
     const itemValues = this.getModelValues(model);
     const postBody = { values: itemValues, parent: parentData.item, name: structureType.name };
 
-    const authToken = this.getAuthToken(), authData = this.getAuthData(), language = this.getLanguage();
+    const authToken = this.getAuthToken(),
+      authData = this.getAuthData(),
+      language = this.getLanguage();
     if (isNew) {
       if (addUrl) {
-        result = await fetchPost(addUrl, postBody, authToken, authData, language) as LineSubmitResult;
-      }
-      else if (isFunction(onLineAddSubmit)) {
+        result = (await fetchPost(addUrl, postBody, authToken, authData, language)) as LineSubmitResult;
+      } else if (isFunction(onLineAddSubmit)) {
         result = await onLineAddSubmit(postBody.values, postBody.parent, postBody.name);
         shouldSort = true;
       }
-    }
-    else {
+    } else {
       if (editUrl) {
-        result = await fetchPost(addUrl, postBody, authToken, authData, language) as LineSubmitResult;
-      }
-      else if (isFunction(onLineEditSubmit)) {
+        result = (await fetchPost(addUrl, postBody, authToken, authData, language)) as LineSubmitResult;
+      } else if (isFunction(onLineEditSubmit)) {
         result = await onLineEditSubmit(postBody.values, postBody.parent, postBody.name);
       }
     }
@@ -404,19 +402,19 @@ export class Tree extends Component<{
     }
   }
 
-  protected async onModalDeleteSubmit(data: DataNode, parentData: DataNode, structure: Structure): Promise<void>
-  {
+  protected async onModalDeleteSubmit(data: DataNode, parentData: DataNode, structure: Structure): Promise<void> {
     const deleteUrl = structure.getDeleteUrl();
     const structureType = structure.getStructureType();
     const onLineDeleteSubmit = this.events.onLineDeleteSubmit;
     let result: LineSubmitResult = { item: null, response: null };
     let shouldSort = false;
-    const authToken = this.getAuthToken(), authData = this.getAuthData(), language = this.getLanguage();
+    const authToken = this.getAuthToken(),
+      authData = this.getAuthData(),
+      language = this.getLanguage();
     const postBody = { values: data.item, parent: parentData.item, name: structureType.name };
     if (deleteUrl) {
-      result = await fetchPost(deleteUrl, postBody, authToken, authData, language) as LineSubmitResult;
-    }
-    else if (isFunction(onLineDeleteSubmit)) {
+      result = (await fetchPost(deleteUrl, postBody, authToken, authData, language)) as LineSubmitResult;
+    } else if (isFunction(onLineDeleteSubmit)) {
       result = await onLineDeleteSubmit(postBody.values, postBody.parent, postBody.name);
       shouldSort = true;
     }
@@ -427,8 +425,7 @@ export class Tree extends Component<{
       if (result.response.data) {
         this.state.data = result.response.data;
       } else if (result.item) {
-        parentData.children = parentData.children.filter((value) =>
-        {
+        parentData.children = parentData.children.filter(value => {
           if (value === data) {
             return false;
           }
@@ -441,27 +438,24 @@ export class Tree extends Component<{
     }
   }
 
-  private getModelValues(model: FormModel): DataNode
-  {
+  private getModelValues(model: FormModel): DataNode {
     const newModel = Object.assign({}, model);
-    const data: DataNode = objectMap(newModel, (attribute: FormAttribute) =>
-    {
+    const data: DataNode = objectMap(newModel, (attribute: FormAttribute) => {
       return attribute['value'];
     });
 
     return data;
   }
 
-  private createModel(data: DataNode, structure: Structure, isNew: boolean): FormModel
-  {
+  private createModel(data: DataNode, structure: Structure, isNew: boolean): FormModel {
     const structureItems = structure.getItems();
-    const model = objectMap(structureItems, (item: FormAttribute) =>
-    {
+    const model = objectMap(structureItems, (item: FormAttribute) => {
       const attribute = Object.assign({}, item);
       const key = attribute.name;
 
       if (!isNew) {
         const dataItem = data.item;
+        // console.log(dataItem);
         if (dataItem.hasOwnProperty(key)) {
           attribute.value = dataItem[key];
         }
@@ -473,10 +467,8 @@ export class Tree extends Component<{
     return model;
   }
 
-  private initStructures(): void
-  {
-    this._structures = objectMap(this.structures, (structureType: StructureType) =>
-    {
+  private initStructures(): void {
+    this._structures = objectMap(this.structures, (structureType: StructureType) => {
       const structure = new Structure(structureType);
 
       if (structure.getCanEdit() === undefined) {
@@ -499,8 +491,7 @@ export class Tree extends Component<{
     }
   }
 
-  protected setDefaultProps(): void
-  {
+  protected setDefaultProps(): void {
     super.setDefaultProps();
 
     this.data = [];
@@ -508,10 +499,14 @@ export class Tree extends Component<{
     this.config = { authToken: '', authData: {}, language: 'en' };
 
     this.events = {};
-    this.events.onLineClick = () => { };
-    this.events.onLineMove = () => { };
-    this.events.onLineAddSubmit = (item: DataNodeItem) => { return { item, response: null } };
-    this.events.onLineEditSubmit = (item: DataNodeItem) => { return { item, response: null } };
+    this.events.onLineClick = () => {};
+    this.events.onLineMove = () => {};
+    this.events.onLineAddSubmit = (item: DataNodeItem) => {
+      return { item, response: null };
+    };
+    this.events.onLineEditSubmit = (item: DataNodeItem) => {
+      return { item, response: null };
+    };
   }
 }
 
@@ -520,17 +515,17 @@ export type TreeEvents = {
   onLineMove?: OnLineMoveEvent;
 
   /**
-   * Fires when new line was submited
+   * Fires when new line was submitted
    */
   onLineAddSubmit?: OnLineSubmitEvent;
 
   /**
-   * Fires when line edit was submited
+   * Fires when line edit was submitted
    */
   onLineEditSubmit?: OnLineSubmitEvent;
 
   /**
-   * Fires when line delete was submited
+   * Fires when line delete was submitted
    */
   onLineDeleteSubmit?: OnLineSubmitEvent;
 };
@@ -538,7 +533,6 @@ export type TreeEvents = {
 export type OnLineSubmitEvent = (item: DataNodeItem, parentItem: DataNodeItem, name: string) => LineSubmitResult;
 
 export type OnLineMoveEvent = (moveData: OnLineMoveData, item: HTMLElement) => void;
-
 
 export type TreeConfig = {
   /**
@@ -557,7 +551,7 @@ export type TreeConfig = {
   readonly canDelete?: boolean;
 
   /**
-   * How much each branch should be offseted
+   * How much each branch should be offset
    */
   readonly offset?: number;
 
@@ -576,7 +570,7 @@ export type DataNode = {
 
 export type DataNodeItem = { [name: string]: string };
 
-export type LineSubmitResult = { item: DataNodeItem; response: Response; };
+export type LineSubmitResult = { item: DataNodeItem; response: Response };
 
 export type Response = {
   readonly status: boolean;

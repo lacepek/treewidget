@@ -1,22 +1,30 @@
-import { DynamicForm } from './base/forms/dynamicForm';
+import { Form } from 'react-form';
+import ITreeFormConfig from './interfaces/iTreeFormConfig';
+import { createElement, addContent } from 'component-base';
 
-export class TreeForm extends DynamicForm
-{
+class TreeForm extends Form {
   public onCancel: () => void;
 
-  protected render(): void
-  {
+  public constructor(config: ITreeFormConfig) {
+    super(config);
+  }
+
+  protected render(): void {
     super.render();
 
-    const cancelButton = this.createElement('button', 'Cancel', { className: 'btn btn-default', type: 'button' });
+    const cancelButton = createElement('button', 'Cancel', { className: 'btn btn-default', type: 'button' });
     if (this.onCancel) {
-      cancelButton.onclick = () => { this.onCancel(); };
+      cancelButton.onclick = () => {
+        this.onCancel();
+      };
     }
 
-    const submitButton = this.createElement('button', 'Submit', { className: 'btn btn-primary' });
+    const submitButton = createElement('button', 'Submit', { className: 'btn btn-primary' });
 
-    const group = this.createElement('div', [cancelButton, submitButton], { className: 'btn-group', role: 'group' });
+    const group = createElement('div', [cancelButton, submitButton], { className: 'btn-group', role: 'group' });
 
-    this.addContent(group);
+    addContent(this, group);
   }
 }
+
+export default TreeForm;

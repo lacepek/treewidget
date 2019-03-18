@@ -1,8 +1,6 @@
-import { Component } from './component';
-import { ElementUtility } from './utility/elementUtility';
+import { Component, addContent, createElement } from 'component-base';
 
-export class Modal extends Component<{ content?: any, title?: any }>
-{
+export class Modal extends Component<{ content?: any; title?: any }> {
   public content: any;
   public hasCloseButton: boolean;
 
@@ -10,58 +8,54 @@ export class Modal extends Component<{ content?: any, title?: any }>
 
   private contentElement: HTMLElement;
 
-  public init()
-  {
+  public init() {
     super.init();
 
     this.state.content = this.content;
   }
 
-  protected render(): void
-  {
+  protected render(): void {
     this.element.className = 'modal-overlay';
 
-    this.contentElement = this.createElement('div', null, { className: 'modal-window-body' });
+    this.contentElement = createElement('div', null, { className: 'modal-window-body' });
 
-    const windowHeader = this.createElement('div', null, { className: 'modal-window-header' });
-    const windowFooter = this.createElement('div', null, { className: 'modal-window-footer' });
+    const windowHeader = createElement('div', null, { className: 'modal-window-header' });
+    const windowFooter = createElement('div', null, { className: 'modal-window-footer' });
 
-    const window = this.createElement(
-      'div',
-      [windowHeader, this.contentElement, windowFooter],
-      { className: 'modal-window' }
-    );
+    const window = createElement('div', [windowHeader, this.contentElement, windowFooter], {
+      className: 'modal-window'
+    });
 
     if (this.state.title) {
       windowHeader.appendChild(this.state.title);
     }
 
     if (this.hasCloseButton) {
-      const icon = this.createElement('span', '&times;', { ariaHidden: 'true' });
-      const closeButton = this.createElement('button', icon, {
+      const icon = createElement('span', '&times;', { ariaHidden: 'true' });
+      const closeButton = createElement('button', icon, {
         className: 'close',
         ariaLabel: 'Close'
       });
-      closeButton.addEventListener('click', () => { this.close() });
+      closeButton.addEventListener('click', () => {
+        this.close();
+      });
       windowHeader.appendChild(closeButton);
     }
 
     if (this.state.content) {
-      ElementUtility.addContent(this.contentElement, this.state.content);
+      addContent(this.contentElement, this.state.content);
     }
 
-    this.element.addEventListener('click', (event: Event) =>
-    {
+    this.element.addEventListener('click', (event: Event) => {
       if (event.target === this.element) {
-        this.close()
+        this.close();
       }
     });
 
-    this.addContent(window);
+    addContent(this, window);
   }
 
-  protected close()
-  {
+  protected close() {
     this.hide();
 
     if (this.onClose) {
@@ -69,8 +63,7 @@ export class Modal extends Component<{ content?: any, title?: any }>
     }
   }
 
-  protected setDefaultProps()
-  {
+  protected setDefaultProps() {
     super.setDefaultProps();
 
     this.hasCloseButton = true;

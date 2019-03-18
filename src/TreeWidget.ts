@@ -7,7 +7,7 @@ export default class TreeWidget
 
   /**
    * Vytvoří widget
-   * 
+   *
    * @param config
    */
   public static create(config: Config)
@@ -17,8 +17,8 @@ export default class TreeWidget
 
   /**
    * Zaregistruje event callback editace řádku
-   * 
-   * @param onLineEditSubmit 
+   *
+   * @param onLineEditSubmit
    */
   public static setOnLineEditSubmit(onLineEditSubmit: OnLineSubmitEvent): void
   {
@@ -27,8 +27,8 @@ export default class TreeWidget
 
   /**
    * Zaregistruje event callback přidání řádku
-   * 
-   * @param onLineAddSubmit 
+   *
+   * @param onLineAddSubmit
    */
   public static setOnLineAddSubmit(onLineAddSubmit: OnLineSubmitEvent): void
   {
@@ -37,8 +37,8 @@ export default class TreeWidget
 
   /**
    * Zaregistruje event callback smazání řádku
-   * 
-   * @param onLineDeleteSubmit 
+   *
+   * @param onLineDeleteSubmit
    */
   public static setOnLineDeleteSubmit(onLineDeleteSubmit: OnLineSubmitEvent): void
   {
@@ -47,8 +47,8 @@ export default class TreeWidget
 
   /**
    * Zaregistruje event callback posunu řádku
-   * 
-   * @param onLineMove 
+   *
+   * @param onLineMove
    */
   public static setOnLineMove(onLineMove: OnLineMoveEvent): void
   {
@@ -57,8 +57,8 @@ export default class TreeWidget
 
   /**
    * Nastaví strukturu stromu
-   * 
-   * @param structure 
+   *
+   * @param structure
    */
   public static setStructure(structure: { [name: string]: StructureType })
   {
@@ -86,4 +86,4 @@ export type Config = {
    * Další nastavení
    */
   config: TreeConfig;
-}
+};
